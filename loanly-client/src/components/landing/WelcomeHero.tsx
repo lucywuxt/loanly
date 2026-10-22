@@ -8,6 +8,7 @@ import { useTypewriterLoop } from '../../hooks/useTypewriter';
 
 interface WelcomeHeroProps {
   onExplore: () => void;
+  onSelectCountry: (iso3: string) => void;
 }
 
 const ROTATING_PHRASES = [
@@ -17,7 +18,7 @@ const ROTATING_PHRASES = [
   'Fully Transparent',
 ];
 
-export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onExplore }) => {
+export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onExplore, onSelectCountry }) => {
   const typed = useTypewriterLoop(ROTATING_PHRASES);
 
   return (
@@ -59,7 +60,7 @@ export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onExplore }) => {
 
         {/* Right: interactive decorative globe */}
         <div className="flex items-center justify-center">
-          <CobeGlobe />
+          <CobeGlobe onSelectCountry={onSelectCountry} />
         </div>
       </div>
 

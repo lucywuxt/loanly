@@ -15,7 +15,11 @@ const MARKED_COUNTRIES: { location: [number, number]; size: number; iso: string;
 ];
 const MARKERS = MARKED_COUNTRIES.map(({ location, size, iso }) => ({ location, size, id: iso }));
 
-export const CobeGlobe: React.FC = () => {
+interface CobeGlobeProps {
+  onSelectCountry: (iso3: string) => void;
+}
+
+export const CobeGlobe: React.FC<CobeGlobeProps> = ({ onSelectCountry }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const pointerInteracting = useRef<number | null>(null);
@@ -112,12 +116,15 @@ export const CobeGlobe: React.FC = () => {
 
       {/* Floating labels anchored to each marker's live screen position via
           CSS anchor positioning (cobe sets --cobe-<id> / --cobe-visible-<id>
-          itself). Browsers without anchor-positioning support just never
-          see these (gated by @supports in CSS) — the legend row below
-          covers that case. */}
+          itself). Clicking one jumps straight to that country on the real
+          dashboard below. Browsers without anchor-positioning support just
+          never see these (gated by @supports in CSS) — the legend row
+          below covers that case. */}
       {MARKED_COUNTRIES.map((c) => (
-        <div
+        <button
           key={c.iso}
+          type="button"
+          onClick={() => onSelectCountry(c.iso)}
           className="cobe-marker-label"
           style={
             {
@@ -127,15 +134,21 @@ export const CobeGlobe: React.FC = () => {
           }
         >
           {c.name}
-        </div>
+        </button>
       ))}
 
       <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
         {MARKED_COUNTRIES.map((c) => (
-          <span key={c.iso} title={c.name} className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <button
+            key={c.iso}
+            type="button"
+            title={c.name}
+            onClick={() => onSelectCountry(c.iso)}
+            className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-emerald-400"
+          >
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             {c.iso}
-          </span>
+          </button>
         ))}
       </div>
     </div>
