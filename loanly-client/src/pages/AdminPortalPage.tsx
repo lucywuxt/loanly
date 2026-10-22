@@ -136,8 +136,8 @@ export const AdminPortalPage: React.FC = () => {
           <Badge variant="pipeline" className="mb-2">
             WORLD BANK INTERNAL OPERATIONS • {user?.subRoleOrRegion?.toUpperCase()}
           </Badge>
-          <h1 className="text-xl font-semibold text-zinc-50">Task Team &amp; WFACS Disbursement Control Center</h1>
-          <p className="mt-1 max-w-2xl text-sm text-zinc-500">
+          <h1 className="text-xl font-semibold text-foreground">Task Team &amp; WFACS Disbursement Control Center</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             Manage sovereign project lifecycles, enforce financing ceilings on Withdrawal Applications, record
             Designated Account disbursements, and track PDO Results Indicators.
           </p>
@@ -212,8 +212,8 @@ export const AdminPortalPage: React.FC = () => {
                       <Badge variant="muted">{p.sector}</Badge>
                       <Badge variant={PROJECT_STATUS_TONE[p.status] ?? 'default'}>{p.status}</Badge>
                     </div>
-                    <h3 className="text-sm font-semibold text-zinc-100">{p.title}</h3>
-                    <p className="mt-1 max-w-2xl text-xs text-zinc-500">{p.projectDevelopmentObjective}</p>
+                    <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
+                    <p className="mt-1 max-w-2xl text-xs text-muted-foreground">{p.projectDevelopmentObjective}</p>
                   </div>
                   <div className="flex shrink-0 gap-2">
                     {nextStage && (
@@ -228,8 +228,8 @@ export const AdminPortalPage: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-zinc-400">
-                  <span>Ceiling: <strong className="text-zinc-200">${p.approvedAmount.toLocaleString()}</strong></span>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                  <span>Ceiling: <strong className="text-foreground">${p.approvedAmount.toLocaleString()}</strong></span>
                   <span>Disbursed: <strong className="text-emerald-400">${p.totalDisbursed.toLocaleString()}</strong></span>
                   <span>Pending: <strong className="text-amber-400">${p.committedPendingDisbursement.toLocaleString()}</strong></span>
                   <span>Remaining: <strong className="text-sky-400">${p.remainingUndisbursedAmount.toLocaleString()}</strong></span>
@@ -258,10 +258,10 @@ export const AdminPortalPage: React.FC = () => {
               <TableBody>
                 {withdrawals.map((w) => (
                   <TableRow key={w.id}>
-                    <TableCell className="font-mono text-zinc-100">{w.applicationNumber}</TableCell>
+                    <TableCell className="font-mono text-foreground">{w.applicationNumber}</TableCell>
                     <TableCell>
-                      <div className="font-medium text-zinc-200">{w.countryName}</div>
-                      <div className="text-[11px] text-zinc-500">{w.projectCode} — {w.projectTitle}</div>
+                      <div className="font-medium text-foreground">{w.countryName}</div>
+                      <div className="text-[11px] text-muted-foreground">{w.projectCode} — {w.projectTitle}</div>
                     </TableCell>
                     <TableCell><Badge variant="muted">{w.category}</Badge></TableCell>
                     <TableCell className="font-mono">${w.amountRequested.toLocaleString()}</TableCell>
@@ -326,23 +326,23 @@ export const AdminPortalPage: React.FC = () => {
                     Update
                   </Button>
                 </div>
-                <h4 className="text-sm font-semibold text-zinc-100">{ind.indicatorName}</h4>
+                <h4 className="text-sm font-semibold text-foreground">{ind.indicatorName}</h4>
                 <div className="my-3 grid grid-cols-3 gap-2 font-mono text-xs">
                   <div>
-                    <div className="text-[10px] text-zinc-500">Baseline</div>
-                    <div className="text-zinc-200">{ind.baselineValue.toLocaleString()} {ind.unit}</div>
+                    <div className="text-[10px] text-muted-foreground">Baseline</div>
+                    <div className="text-foreground">{ind.baselineValue.toLocaleString()} {ind.unit}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-zinc-500">Current</div>
+                    <div className="text-[10px] text-muted-foreground">Current</div>
                     <div className="text-sky-400">{ind.currentValue.toLocaleString()} {ind.unit}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-zinc-500">Target</div>
+                    <div className="text-[10px] text-muted-foreground">Target</div>
                     <div className="text-emerald-400">{ind.targetValue.toLocaleString()} {ind.unit}</div>
                   </div>
                 </div>
                 <ProgressBar percent={ind.progressPercent} tone="sky" />
-                <div className="mt-1.5 text-[11px] text-zinc-500">
+                <div className="mt-1.5 text-[11px] text-muted-foreground">
                   {ind.progressPercent}% of PDO target ({disbursements.filter((d) => d.projectId === p.id).length} disbursements)
                 </div>
               </Card>

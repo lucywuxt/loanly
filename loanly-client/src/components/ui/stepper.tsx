@@ -17,17 +17,17 @@ export const Stepper: React.FC<{ stages: string[]; currentIndex: number }> = ({ 
                   ? 'bg-emerald-500 text-zinc-950'
                   : current
                   ? 'border-2 border-emerald-500 text-emerald-400'
-                  : 'border border-zinc-700 text-zinc-600'
+                  : 'border border-border text-muted-foreground'
               )}
             >
               {done ? <Check className="h-3 w-3" /> : i + 1}
             </div>
-            <span className={cn('text-[10px] whitespace-nowrap', current ? 'text-zinc-200' : 'text-zinc-600')}>
+            <span className={cn('text-[10px] whitespace-nowrap', current ? 'text-foreground' : 'text-muted-foreground')}>
               {stage}
             </span>
           </div>
           {i < stages.length - 1 && (
-            <div className={cn('mx-1 mb-4 h-px flex-1', done ? 'bg-emerald-500' : 'bg-zinc-800')} />
+            <div className={cn('mx-1 mb-4 h-px flex-1', done ? 'bg-emerald-500' : 'bg-muted')} />
           )}
         </React.Fragment>
       );

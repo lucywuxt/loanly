@@ -61,15 +61,15 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="mx-auto grid max-w-4xl gap-6 py-6 lg:grid-cols-2">
       <Card className="p-0">
-        <CardHeader className="flex-col items-start gap-1 border-b border-zinc-800 p-5">
-          <CardTitle className="text-sm normal-case text-zinc-50">Client Connection Authentication</CardTitle>
-          <p className="text-xs text-zinc-500">
+        <CardHeader className="flex-col items-start gap-1 border-b border-border p-5">
+          <CardTitle className="text-sm normal-case text-foreground">Client Connection Authentication</CardTitle>
+          <p className="text-xs text-muted-foreground">
             Sign in as a Member Country Borrower Official or World Bank Task Team / WFACS Officer.
           </p>
         </CardHeader>
 
         <CardContent className="space-y-4 p-5">
-          <div className="grid grid-cols-2 gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-card p-1">
             <button
               type="button"
               onClick={() => {
@@ -78,7 +78,7 @@ export const LoginPage: React.FC = () => {
               }}
               className={cn(
                 'flex items-center justify-center gap-1.5 rounded-md py-2 text-xs font-medium transition-colors',
-                accountType === 'Country' ? 'bg-zinc-800 text-zinc-50' : 'text-zinc-500 hover:text-zinc-300'
+                accountType === 'Country' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <Building2 className="h-3.5 w-3.5" />
@@ -92,7 +92,7 @@ export const LoginPage: React.FC = () => {
               }}
               className={cn(
                 'flex items-center justify-center gap-1.5 rounded-md py-2 text-xs font-medium transition-colors',
-                accountType === 'Admin' ? 'bg-zinc-800 text-zinc-50' : 'text-zinc-500 hover:text-zinc-300'
+                accountType === 'Admin' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -120,9 +120,9 @@ export const LoginPage: React.FC = () => {
       </Card>
 
       <Card className="p-0">
-        <CardHeader className="flex-col items-start gap-1 border-b border-zinc-800 p-5">
-          <CardTitle className="text-sm normal-case text-zinc-50">Instant Demo Accounts</CardTitle>
-          <p className="text-xs text-zinc-500">
+        <CardHeader className="flex-col items-start gap-1 border-b border-border p-5">
+          <CardTitle className="text-sm normal-case text-foreground">Instant Demo Accounts</CardTitle>
+          <p className="text-xs text-muted-foreground">
             Click any pre-seeded sovereign borrower or World Bank staff account to sign in immediately.
           </p>
         </CardHeader>
@@ -130,17 +130,17 @@ export const LoginPage: React.FC = () => {
           {demoAccounts.map((cred, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3"
+              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-3"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <Badge variant={cred.accountType === 'Country' ? 'active' : 'pipeline'}>
                     {cred.accountType === 'Country' ? 'BORROWER' : 'WB STAFF'}
                   </Badge>
-                  <strong className="truncate text-sm text-zinc-100">{cred.label}</strong>
+                  <strong className="truncate text-sm text-foreground">{cred.label}</strong>
                 </div>
-                <div className="mt-1 text-xs text-zinc-500">{cred.roleDescription}</div>
-                <code className="text-[11px] text-zinc-600">{cred.email}</code>
+                <div className="mt-1 text-xs text-muted-foreground">{cred.roleDescription}</div>
+                <code className="text-[11px] text-muted-foreground">{cred.email}</code>
               </div>
               <Button size="sm" variant="outline" onClick={() => handleQuickDemo(cred)} disabled={loading}>
                 Launch

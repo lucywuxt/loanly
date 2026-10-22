@@ -73,8 +73,8 @@ export const CountryPortalPage: React.FC = () => {
           <Badge variant="pipeline" className="mb-2">
             BORROWER CLIENT CONNECTION • {user?.isoAlpha3} ({user?.subRoleOrRegion})
           </Badge>
-          <h1 className="text-xl font-semibold text-zinc-50">{user?.name} — Sovereign Project Financing Portal</h1>
-          <p className="mt-1 max-w-2xl text-sm text-zinc-500">
+          <h1 className="text-xl font-semibold text-foreground">{user?.name} — Sovereign Project Financing Portal</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             Manage approved World Bank IBRD/IDA project ceilings, submit Withdrawal Applications, and monitor
             Designated Account disbursements and PDO Results Indicators.
           </p>
@@ -123,7 +123,7 @@ export const CountryPortalPage: React.FC = () => {
       />
 
       {loading ? (
-        <div className="py-16 text-center text-sm text-zinc-500">Loading borrower portfolio…</div>
+        <div className="py-16 text-center text-sm text-muted-foreground">Loading borrower portfolio…</div>
       ) : activeTab === 'projects' ? (
         <div className="space-y-3">
           {projects.map((p) => {
@@ -138,9 +138,9 @@ export const CountryPortalPage: React.FC = () => {
                       <Badge variant="muted">{p.sector}</Badge>
                       <Badge variant={PROJECT_STATUS_TONE[p.status] ?? 'default'}>{p.status}</Badge>
                     </div>
-                    <h3 className="text-sm font-semibold text-zinc-100">{p.title}</h3>
-                    <p className="mt-1 max-w-2xl text-xs text-zinc-500">
-                      <strong className="text-zinc-400">PDO:</strong> {p.projectDevelopmentObjective}
+                    <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
+                    <p className="mt-1 max-w-2xl text-xs text-muted-foreground">
+                      <strong className="text-muted-foreground">PDO:</strong> {p.projectDevelopmentObjective}
                     </p>
                   </div>
                   {p.status === 'Active' && (
@@ -156,8 +156,8 @@ export const CountryPortalPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-zinc-400">
-                    <span>Ceiling: <strong className="text-zinc-200">${p.approvedAmount.toLocaleString()}</strong></span>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                    <span>Ceiling: <strong className="text-foreground">${p.approvedAmount.toLocaleString()}</strong></span>
                     <span>Disbursed: <strong className="text-emerald-400">${p.totalDisbursed.toLocaleString()} ({pct}%)</strong></span>
                     <span>Pending: <strong className="text-amber-400">${p.committedPendingDisbursement.toLocaleString()}</strong></span>
                     <span>Remaining: <strong className="text-sky-400">${p.remainingUndisbursedAmount.toLocaleString()}</strong></span>
@@ -186,7 +186,7 @@ export const CountryPortalPage: React.FC = () => {
               <TableBody>
                 {withdrawals.map((w) => (
                   <TableRow key={w.id}>
-                    <TableCell className="font-mono text-zinc-100">{w.applicationNumber}</TableCell>
+                    <TableCell className="font-mono text-foreground">{w.applicationNumber}</TableCell>
                     <TableCell>{w.projectCode} — {w.projectTitle}</TableCell>
                     <TableCell><Badge variant="muted">{w.category}</Badge></TableCell>
                     <TableCell className="font-mono">${w.amountRequested.toLocaleString()}</TableCell>
@@ -199,7 +199,7 @@ export const CountryPortalPage: React.FC = () => {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="text-zinc-500">{new Date(w.submittedAt).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-muted-foreground">{new Date(w.submittedAt).toLocaleDateString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -224,7 +224,7 @@ export const CountryPortalPage: React.FC = () => {
               <TableBody>
                 {disbursements.map((d) => (
                   <TableRow key={d.id}>
-                    <TableCell className="font-mono text-zinc-400">{d.transactionReference}</TableCell>
+                    <TableCell className="font-mono text-muted-foreground">{d.transactionReference}</TableCell>
                     <TableCell>{d.applicationNumber}</TableCell>
                     <TableCell>{d.projectCode} — {d.projectTitle}</TableCell>
                     <TableCell><Badge variant="muted">{d.category}</Badge></TableCell>
@@ -234,7 +234,7 @@ export const CountryPortalPage: React.FC = () => {
                     <TableCell className="text-right font-mono text-sky-400">
                       ${d.designatedAccountBalanceAfter.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-zinc-500">{new Date(d.disbursedAt).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-muted-foreground">{new Date(d.disbursedAt).toLocaleDateString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -247,23 +247,23 @@ export const CountryPortalPage: React.FC = () => {
             p.resultsIndicators.map((ind) => (
               <Card key={ind.id} className="p-4">
                 <Badge variant="muted" className="mb-2">{p.projectCode} — {p.title}</Badge>
-                <h4 className="text-sm font-semibold text-zinc-100">{ind.indicatorName}</h4>
+                <h4 className="text-sm font-semibold text-foreground">{ind.indicatorName}</h4>
                 <div className="my-3 grid grid-cols-3 gap-2 font-mono text-xs">
                   <div>
-                    <div className="text-[10px] text-zinc-500">Baseline</div>
-                    <div className="text-zinc-200">{ind.baselineValue.toLocaleString()} {ind.unit}</div>
+                    <div className="text-[10px] text-muted-foreground">Baseline</div>
+                    <div className="text-foreground">{ind.baselineValue.toLocaleString()} {ind.unit}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-zinc-500">Current</div>
+                    <div className="text-[10px] text-muted-foreground">Current</div>
                     <div className="text-sky-400">{ind.currentValue.toLocaleString()} {ind.unit}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-zinc-500">Target</div>
+                    <div className="text-[10px] text-muted-foreground">Target</div>
                     <div className="text-emerald-400">{ind.targetValue.toLocaleString()} {ind.unit}</div>
                   </div>
                 </div>
                 <ProgressBar percent={ind.progressPercent} tone="sky" />
-                <div className="mt-1.5 text-[11px] text-zinc-500">{ind.progressPercent}% toward PDO target</div>
+                <div className="mt-1.5 text-[11px] text-muted-foreground">{ind.progressPercent}% toward PDO target</div>
               </Card>
             ))
           )}

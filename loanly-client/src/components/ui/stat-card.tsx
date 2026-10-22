@@ -25,9 +25,9 @@ export const StatCard: React.FC<StatCardProps> = ({ icon, tone = 'sky', label, v
       {icon}
     </div>
     <div className="min-w-0">
-      <div className="text-xs text-zinc-400">{label}</div>
-      <div className="mt-0.5 font-mono text-xl text-zinc-50">{value}</div>
-      {sub && <div className="mt-0.5 text-[11px] text-zinc-500">{sub}</div>}
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="mt-0.5 font-mono text-xl text-foreground">{value}</div>
+      {sub && <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>}
     </div>
   </Card>
 );

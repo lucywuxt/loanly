@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Globe2, ShieldCheck, Building2, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
+import { ThemeToggle } from './ThemeToggle';
 import { cn } from '@/lib/utils';
 
 export const Navbar: React.FC = () => {
@@ -16,12 +17,12 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 h-14 border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
+    <header className="liquid-glass sticky top-0 z-40 h-14 rounded-none border-x-0 border-t-0">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-4 px-4">
         <Link to="/" className="flex shrink-0 items-center gap-2">
           <Globe2 className="h-5 w-5 text-emerald-500" />
-          <span className="font-mono text-sm font-semibold tracking-tight text-zinc-50">
-            LOANLY <span className="text-zinc-500">loanly.wiki</span>
+          <span className="font-mono text-sm font-semibold tracking-tight text-foreground">
+            LOANLY <span className="text-muted-foreground">loanly.wiki</span>
           </span>
         </Link>
 
@@ -30,7 +31,7 @@ export const Navbar: React.FC = () => {
             to="/"
             className={cn(
               'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
-              location.pathname === '/' ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-500 hover:text-zinc-200'
+              location.pathname === '/' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'
             )}
           >
             <Globe2 className="h-3.5 w-3.5" />
@@ -43,8 +44,8 @@ export const Navbar: React.FC = () => {
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
                 location.pathname.startsWith('/country')
-                  ? 'bg-zinc-800 text-zinc-100'
-                  : 'text-zinc-500 hover:text-zinc-200'
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <Building2 className="h-3.5 w-3.5" />
@@ -58,8 +59,8 @@ export const Navbar: React.FC = () => {
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
                 location.pathname.startsWith('/admin')
-                  ? 'bg-zinc-800 text-zinc-100'
-                  : 'text-zinc-500 hover:text-zinc-200'
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -69,11 +70,12 @@ export const Navbar: React.FC = () => {
         </nav>
 
         <div className="flex shrink-0 items-center gap-3">
+          <ThemeToggle />
           {user ? (
             <div className="flex items-center gap-2.5">
               <div className="hidden text-right sm:block">
-                <div className="text-xs font-medium text-zinc-200">{user.name}</div>
-                <div className="text-[10px] text-zinc-500">
+                <div className="text-xs font-medium text-foreground">{user.name}</div>
+                <div className="text-[10px] text-muted-foreground">
                   {user.accountType === 'Admin' ? `WB ${user.subRoleOrRegion}` : `${user.subRoleOrRegion} • ${user.incomeLevel}`}
                 </div>
               </div>

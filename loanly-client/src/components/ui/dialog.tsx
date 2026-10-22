@@ -23,10 +23,7 @@ export const Dialog: React.FC<DialogProps> = ({ onClose, children, className }) 
       onClick={onClose}
     >
       <div
-        className={cn(
-          'max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl',
-          className
-        )}
+        className={cn('liquid-glass max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl shadow-2xl', className)}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -40,14 +37,14 @@ export const DialogHeader: React.FC<{
   badge?: React.ReactNode;
   onClose: () => void;
 }> = ({ title, badge, onClose }) => (
-  <div className="flex items-start justify-between gap-3 border-b border-zinc-800 p-4">
+  <div className="flex items-start justify-between gap-3 border-b border-border p-4">
     <div>
       {badge}
-      <h3 className="mt-1 text-base font-semibold text-zinc-50">{title}</h3>
+      <h3 className="mt-1 text-base font-semibold text-foreground">{title}</h3>
     </div>
     <button
       onClick={onClose}
-      className="rounded-md p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+      className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
     >
       <X className="h-4 w-4" />
     </button>

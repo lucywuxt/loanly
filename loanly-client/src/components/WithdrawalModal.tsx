@@ -60,17 +60,17 @@ export const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ project, onClo
         onClose={onClose}
       />
 
-      <div className="grid grid-cols-3 gap-3 border-b border-zinc-800 p-4">
+      <div className="grid grid-cols-3 gap-3 border-b border-border p-4">
         <div>
-          <div className="text-[11px] text-zinc-500">Approved Ceiling</div>
-          <div className="font-mono text-sm text-zinc-100">${project.approvedAmount.toLocaleString()}</div>
+          <div className="text-[11px] text-muted-foreground">Approved Ceiling</div>
+          <div className="font-mono text-sm text-foreground">${project.approvedAmount.toLocaleString()}</div>
         </div>
         <div>
-          <div className="text-[11px] text-zinc-500">Remaining Undisbursed</div>
-          <div className="font-mono text-sm text-zinc-100">${project.remainingUndisbursedAmount.toLocaleString()}</div>
+          <div className="text-[11px] text-muted-foreground">Remaining Undisbursed</div>
+          <div className="font-mono text-sm text-foreground">${project.remainingUndisbursedAmount.toLocaleString()}</div>
         </div>
         <div>
-          <div className="text-[11px] text-zinc-500">Uncommitted Available</div>
+          <div className="text-[11px] text-muted-foreground">Uncommitted Available</div>
           <div className="font-mono text-sm text-emerald-400">${project.availableToRequestAmount.toLocaleString()}</div>
         </div>
       </div>
@@ -87,7 +87,7 @@ export const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ project, onClo
               </option>
             ))}
           </Select>
-          {selectedCatMeta && <p className="mt-1 text-[11px] text-zinc-500">{selectedCatMeta.hint}</p>}
+          {selectedCatMeta && <p className="mt-1 text-[11px] text-muted-foreground">{selectedCatMeta.hint}</p>}
         </div>
 
         <div>

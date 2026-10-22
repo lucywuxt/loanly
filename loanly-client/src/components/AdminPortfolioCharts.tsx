@@ -18,10 +18,11 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 const PIE_COLORS = ['#38bdf8', '#10b981', '#f59e0b', '#a78bfa', '#f472b6'];
 
 const tooltipStyle = {
-  backgroundColor: '#18181b',
-  border: '1px solid #27272a',
+  backgroundColor: 'var(--card)',
+  border: '1px solid var(--border)',
   borderRadius: '8px',
   fontSize: '12px',
+  color: 'var(--foreground)',
 };
 
 export const AdminPortfolioCharts: React.FC<{ analytics: PortfolioAnalytics }> = ({ analytics }) => {
@@ -51,9 +52,9 @@ export const AdminPortfolioCharts: React.FC<{ analytics: PortfolioAnalytics }> =
         <CardContent className="pt-0">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={sectorData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-              <XAxis dataKey="name" stroke="#71717a" fontSize={11} />
-              <YAxis stroke="#71717a" fontSize={11} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={11} />
+              <YAxis stroke="var(--muted-foreground)" fontSize={11} />
               <Tooltip contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: '11px' }} />
               <Bar dataKey="Committed" fill="#38bdf8" radius={[4, 4, 0, 0]} />
@@ -70,9 +71,9 @@ export const AdminPortfolioCharts: React.FC<{ analytics: PortfolioAnalytics }> =
         <CardContent className="pt-0">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={regionData} layout="vertical" margin={{ left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-              <XAxis type="number" stroke="#71717a" fontSize={11} />
-              <YAxis dataKey="name" type="category" stroke="#71717a" fontSize={10} width={110} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis type="number" stroke="var(--muted-foreground)" fontSize={11} />
+              <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" fontSize={10} width={110} />
               <Tooltip contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: '11px' }} />
               <Bar dataKey="Committed" fill="#a78bfa" radius={[0, 4, 4, 0]} />
@@ -103,8 +104,8 @@ export const AdminPortfolioCharts: React.FC<{ analytics: PortfolioAnalytics }> =
               </Pie>
               <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => `$${value}M`} />
               <Legend
-                wrapperStyle={{ fontSize: '11px', color: '#a1a1aa' }}
-                formatter={(value) => <span style={{ color: '#d4d4d8' }}>{value}</span>}
+                wrapperStyle={{ fontSize: '11px', color: 'var(--muted-foreground)' }}
+                formatter={(value) => <span style={{ color: 'var(--foreground)' }}>{value}</span>}
               />
             </PieChart>
           </ResponsiveContainer>
