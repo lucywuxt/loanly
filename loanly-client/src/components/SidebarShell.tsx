@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Globe2, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ThemeToggle } from './ThemeToggle';
+import { NotificationBell } from './NotificationBell';
 import { TabBar, type TabItem } from './ui/tabs';
 import { cn } from '@/lib/utils';
 
@@ -32,8 +33,9 @@ export const SidebarShell: React.FC<SidebarShellProps> = ({ portalLabel, tabs, a
           <span className="font-mono text-sm font-semibold tracking-tight">LOANLY</span>
         </Link>
 
-        <div className="px-4 pb-3">
+        <div className="flex items-center justify-between px-4 pb-3">
           <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{portalLabel}</span>
+          <NotificationBell />
         </div>
 
         <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2">
@@ -92,6 +94,7 @@ export const SidebarShell: React.FC<SidebarShellProps> = ({ portalLabel, tabs, a
             <span className="font-mono text-sm font-semibold tracking-tight">LOANLY</span>
           </Link>
           <div className="flex items-center gap-1">
+            <NotificationBell />
             <ThemeToggle />
             <button
               onClick={handleLogout}
