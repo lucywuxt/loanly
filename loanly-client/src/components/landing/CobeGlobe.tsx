@@ -13,7 +13,7 @@ const MARKED_COUNTRIES: { location: [number, number]; size: number; iso: string;
   { location: [9.0765, 7.3986], size: 0.05, iso: 'NGA', name: 'Nigeria' },
   { location: [4.711, -74.0721], size: 0.05, iso: 'COL', name: 'Colombia' },
 ];
-const MARKERS = MARKED_COUNTRIES.map(({ location, size }) => ({ location, size }));
+const MARKERS = MARKED_COUNTRIES.map(({ location, size, iso }) => ({ location, size, id: iso }));
 
 export const CobeGlobe: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -109,6 +109,26 @@ export const CobeGlobe: React.FC = () => {
           }
         }}
       />
+
+      {/* Floating labels anchored to each marker's live screen position via
+          CSS anchor positioning (cobe sets --cobe-<id> / --cobe-visible-<id>
+          itself). Browsers without anchor-positioning support just never
+          see these (gated by @supports in CSS) — the legend row below
+          covers that case. */}
+      {MARKED_COUNTRIES.map((c) => (
+        <div
+          key={c.iso}
+          className="cobe-marker-label"
+          style={
+            {
+              positionAnchor: `--cobe-${c.iso}`,
+              opacity: `var(--cobe-visible-${c.iso}, 0)`,
+            } as React.CSSProperties
+          }
+        >
+          {c.name}
+        </div>
+      ))}
 
       <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
         {MARKED_COUNTRIES.map((c) => (
