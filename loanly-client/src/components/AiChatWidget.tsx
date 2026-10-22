@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { MessageSquare, Send, Sparkles, X, Minimize2 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -13,10 +15,7 @@ interface AiChatWidgetProps {
   selectedWithdrawalId?: number;
 }
 
-export const AiChatWidget: React.FC<AiChatWidgetProps> = ({
-  selectedProjectId,
-  selectedWithdrawalId,
-}) => {
+export const AiChatWidget: React.FC<AiChatWidgetProps> = ({ selectedProjectId, selectedWithdrawalId }) => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
@@ -77,65 +76,80 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({
   };
 
   return (
-    <div className="ai-widget-root">
+    <div className="fixed bottom-4 right-4 z-40">
       {!isOpen ? (
         <button
-          className="ai-fab-button"
           onClick={() => setIsOpen(true)}
           title="Open Gemini 3.6 Flash Operations Assistant"
+          className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-100 shadow-lg transition-colors hover:border-emerald-500/60"
         >
-          <Sparkles size={18} />
-          <span>Client Connection AI</span>
-          <MessageSquare size={17} />
+          <Sparkles className="h-4 w-4 text-emerald-400" />
+          Client Connection AI
+          <MessageSquare className="h-4 w-4" />
         </button>
       ) : (
-        <div className="ai-chat-panel">
-          <div className="ai-chat-header">
-            <div className="ai-chat-title-group">
-              <div className="ai-icon-badge">
-                <Sparkles size={16} />
+        <div className="flex h-[520px] w-[360px] flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl">
+          <div className="flex items-center justify-between gap-2 border-b border-zinc-800 p-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                <Sparkles className="h-4 w-4" />
               </div>
               <div>
-                <div className="ai-title">Client Connection Assistant</div>
-                <div className="ai-subtitle">
+                <div className="text-xs font-semibold text-zinc-100">Client Connection Assistant</div>
+                <div className="text-[10px] text-zinc-500">
                   {modelBadge} • {contextSummary}
                 </div>
               </div>
             </div>
-            <div className="ai-header-actions">
-              <button className="icon-btn" onClick={() => setIsOpen(false)} title="Minimize">
-                <Minimize2 size={16} />
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="rounded-md p-1 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
+                title="Minimize"
+              >
+                <Minimize2 className="h-3.5 w-3.5" />
               </button>
-              <button className="icon-btn" onClick={() => setIsOpen(false)} title="Close">
-                <X size={16} />
+              <button
+                onClick={() => setIsOpen(false)}
+                className="rounded-md p-1 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
+                title="Close"
+              >
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          <div className="ai-chat-messages">
+          <div className="flex-1 space-y-3 overflow-y-auto p-3">
             {messages.map((m, idx) => (
-              <div key={idx} className={`ai-msg-bubble ${m.role}`}>
-                <div className="ai-msg-role">
+              <div
+                key={idx}
+                className={cn(
+                  'rounded-lg border p-2.5 text-xs leading-relaxed',
+                  m.role === 'assistant'
+                    ? 'border-zinc-800 bg-zinc-800/50 text-zinc-200'
+                    : 'ml-6 border-emerald-500/20 bg-emerald-500/10 text-zinc-100'
+                )}
+              >
+                <div className="mb-1 text-[10px] font-medium text-zinc-500">
                   {m.role === 'assistant' ? 'WB Operations AI' : user.name}
                 </div>
-                <div className="ai-msg-text">{m.content}</div>
+                <div className="whitespace-pre-wrap">{m.content}</div>
               </div>
             ))}
             {loading && (
-              <div className="ai-msg-bubble assistant">
-                <div className="ai-msg-role">WB Operations AI</div>
-                <div className="ai-msg-text">Analyzing live portfolio &amp; IPF guidelines...</div>
+              <div className="rounded-lg border border-zinc-800 bg-zinc-800/50 p-2.5 text-xs text-zinc-400">
+                Analyzing live portfolio &amp; IPF guidelines…
               </div>
             )}
           </div>
 
-          <div className="ai-suggestions-strip">
+          <div className="flex flex-wrap gap-1.5 border-t border-zinc-800 p-2">
             {suggestions.slice(0, 3).map((s, i) => (
               <button
                 key={i}
-                className="ai-suggestion-chip"
                 onClick={() => handleSend(s)}
                 disabled={loading}
+                className="rounded-full border border-zinc-800 bg-zinc-800/50 px-2.5 py-1 text-[10px] text-zinc-400 transition-colors hover:border-emerald-500/40 hover:text-zinc-200 disabled:opacity-50"
               >
                 {s}
               </button>
@@ -143,7 +157,7 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({
           </div>
 
           <form
-            className="ai-chat-input-bar"
+            className="flex items-center gap-2 border-t border-zinc-800 p-2.5"
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
@@ -155,10 +169,11 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about expenditure categories, WAs, or project ceilings..."
               disabled={loading}
+              className="h-8 flex-1 rounded-md border border-zinc-800 bg-zinc-900 px-2.5 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-emerald-500/50"
             />
-            <button type="submit" className="btn btn-primary btn-sm" disabled={loading || !input.trim()}>
-              <Send size={15} />
-            </button>
+            <Button type="submit" size="icon" disabled={loading || !input.trim()}>
+              <Send className="h-3.5 w-3.5" />
+            </Button>
           </form>
         </div>
       )}

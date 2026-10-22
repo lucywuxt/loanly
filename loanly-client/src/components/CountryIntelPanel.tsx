@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { PROJECT_STATUS_TONE } from '../lib/status';
 
 interface KpiDef {
   label: string;
@@ -27,15 +28,6 @@ function formatCount(v: number): string {
   if (v >= 1e3) return `${(v / 1e3).toFixed(0)}K`;
   return v.toFixed(0);
 }
-
-const statusVariant: Record<string, 'active' | 'pipeline' | 'risk' | 'muted'> = {
-  Active: 'active',
-  BoardApproval: 'pipeline',
-  Negotiation: 'pipeline',
-  Appraisal: 'pipeline',
-  Concept: 'muted',
-  Closed: 'risk',
-};
 
 interface CountryIntelPanelProps {
   iso3: string | null;
@@ -204,7 +196,7 @@ export const CountryIntelPanel: React.FC<CountryIntelPanelProps> = ({
                       ${(p.approvedAmount / 1e6).toFixed(0)}M
                     </TableCell>
                     <TableCell className="text-right">
-                      <Badge variant={statusVariant[p.status] ?? 'default'}>{p.status}</Badge>
+                      <Badge variant={PROJECT_STATUS_TONE[p.status] ?? 'default'}>{p.status}</Badge>
                     </TableCell>
                   </TableRow>
                 ))}

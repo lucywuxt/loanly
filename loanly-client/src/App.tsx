@@ -53,12 +53,12 @@ const Shell: React.FC = () => {
   }
 
   return (
-    <div className="app-shell">
+    <div className="flex min-h-screen flex-col bg-zinc-950 text-zinc-50">
       <Navbar />
-      <main className="main-content">{routes}</main>
-      <footer className="app-footer">
+      <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6">{routes}</main>
+      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800 px-4 py-4 text-xs text-zinc-500">
         <div>
-          <strong>LOANLY (loanly.wiki)</strong> — Sovereign Development Financing &amp; Client Connection Operations Platform
+          <strong className="text-zinc-300">LOANLY (loanly.wiki)</strong> — Sovereign Development Financing &amp; Client Connection Operations Platform
         </div>
         <div>
           Powered by World Bank Open Data API v2 • ASP.NET Core 10 • EF Core 10 • Gemini 3.6 Flash

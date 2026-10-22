@@ -1,9 +1,4 @@
-/*
- * Theme + utilities only (no preflight) so Tailwind's base reset doesn't
- * cascade into the existing hand-written CSS used by the auth pages/portals.
- */
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss";
 
 @theme {
   --color-zinc-950: #09090b;
