@@ -62,7 +62,8 @@ builder.Services.AddCors(options =>
                 "http://localhost:5173",
                 "http://127.0.0.1:5173",
                 "https://loanly.wiki",
-                "https://www.loanly.wiki")
+                "https://www.loanly.wiki",
+                "https://agreeable-field-0f4462f10.4.azurestaticapps.net")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
