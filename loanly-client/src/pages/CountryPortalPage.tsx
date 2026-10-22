@@ -13,13 +13,13 @@ import { useAuth } from '../context/AuthContext';
 import type { Disbursement, Project, ProjectStatus, WithdrawalApplication } from '../types/api';
 import { WithdrawalModal } from '../components/WithdrawalModal';
 import { AiChatWidget } from '../components/AiChatWidget';
+import { SidebarShell } from '../components/SidebarShell';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { StatCard } from '../components/ui/stat-card';
 import { ProgressBar } from '../components/ui/progress';
 import { Stepper } from '../components/ui/stepper';
-import { TabBar } from '../components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { PROJECT_STATUS_TONE, WITHDRAWAL_STATUS_TONE } from '../lib/status';
 import { SECTOR_BADGE_CLASSES } from '../lib/sector';
@@ -68,6 +68,17 @@ export const CountryPortalPage: React.FC = () => {
   const activeProjects = projects.filter((p) => p.status === 'Active');
 
   return (
+    <SidebarShell
+      portalLabel="Borrower Portal"
+      active={activeTab}
+      onChange={(id) => setActiveTab(id as typeof activeTab)}
+      tabs={[
+        { id: 'projects', label: `Projects & Ceilings (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
+        { id: 'withdrawals', label: `Withdrawal Applications (${withdrawals.length})`, icon: <Clock className="h-3.5 w-3.5" /> },
+        { id: 'disbursements', label: `Disbursement Ledger (${disbursements.length})`, icon: <Receipt className="h-3.5 w-3.5" /> },
+        { id: 'results', label: 'Results Indicators (PDO)', icon: <Target className="h-3.5 w-3.5" /> },
+      ]}
+    >
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -111,17 +122,6 @@ export const CountryPortalPage: React.FC = () => {
           sub="Available for Drawdown on Active Projects"
         />
       </div>
-
-      <TabBar
-        active={activeTab}
-        onChange={(id) => setActiveTab(id as typeof activeTab)}
-        tabs={[
-          { id: 'projects', label: `Projects & Ceilings (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
-          { id: 'withdrawals', label: `Withdrawal Applications (${withdrawals.length})`, icon: <Clock className="h-3.5 w-3.5" /> },
-          { id: 'disbursements', label: `Disbursement Ledger (${disbursements.length})`, icon: <Receipt className="h-3.5 w-3.5" /> },
-          { id: 'results', label: 'Results Indicators (PDO)', icon: <Target className="h-3.5 w-3.5" /> },
-        ]}
-      />
 
       {loading ? (
         <div className="py-16 text-center text-sm text-muted-foreground">Loading borrower portfolio…</div>
@@ -284,5 +284,6 @@ export const CountryPortalPage: React.FC = () => {
 
       <AiChatWidget selectedProjectId={projects[0]?.id} />
     </div>
+    </SidebarShell>
   );
 };

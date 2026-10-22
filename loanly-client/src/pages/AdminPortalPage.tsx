@@ -26,12 +26,12 @@ import { AdminPortfolioCharts } from '../components/AdminPortfolioCharts';
 import { AdminProjectModal } from '../components/AdminProjectModal';
 import { AdminIndicatorModal } from '../components/AdminIndicatorModal';
 import { AiChatWidget } from '../components/AiChatWidget';
+import { SidebarShell } from '../components/SidebarShell';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { StatCard } from '../components/ui/stat-card';
 import { ProgressBar } from '../components/ui/progress';
-import { TabBar } from '../components/ui/tabs';
 import { Alert } from '../components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { PROJECT_STATUS_TONE, WITHDRAWAL_STATUS_TONE } from '../lib/status';
@@ -131,6 +131,17 @@ export const AdminPortalPage: React.FC = () => {
   };
 
   return (
+    <SidebarShell
+      portalLabel="Task Team Portal"
+      active={activeTab}
+      onChange={(id) => setActiveTab(id as typeof activeTab)}
+      tabs={[
+        { id: 'dashboard', label: 'Portfolio Analytics', icon: <PieChartIcon className="h-3.5 w-3.5" /> },
+        { id: 'projects', label: `Project Lifecycle (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
+        { id: 'withdrawals', label: `Withdrawal Review & Disbursements (${withdrawals.length})`, icon: <Banknote className="h-3.5 w-3.5" /> },
+        { id: 'indicators', label: 'Results Indicators (PDO)', icon: <Target className="h-3.5 w-3.5" /> },
+      ]}
+    >
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -184,17 +195,6 @@ export const AdminPortalPage: React.FC = () => {
           />
         </div>
       )}
-
-      <TabBar
-        active={activeTab}
-        onChange={(id) => setActiveTab(id as typeof activeTab)}
-        tabs={[
-          { id: 'dashboard', label: 'Portfolio Analytics', icon: <PieChartIcon className="h-3.5 w-3.5" /> },
-          { id: 'projects', label: `Project Lifecycle (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
-          { id: 'withdrawals', label: `Withdrawal Review & Disbursements (${withdrawals.length})`, icon: <Banknote className="h-3.5 w-3.5" /> },
-          { id: 'indicators', label: 'Results Indicators (PDO)', icon: <Target className="h-3.5 w-3.5" /> },
-        ]}
-      />
 
       {activeTab === 'dashboard' && analytics && <AdminPortfolioCharts analytics={analytics} />}
 
@@ -379,5 +379,6 @@ export const AdminPortalPage: React.FC = () => {
 
       <AiChatWidget />
     </div>
+    </SidebarShell>
   );
 };
