@@ -4,16 +4,21 @@ import { ChevronDown, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { CobeGlobe } from './CobeGlobe';
-import { useTypewriter } from '../../hooks/useTypewriter';
+import { useTypewriterLoop } from '../../hooks/useTypewriter';
 
 interface WelcomeHeroProps {
   onExplore: () => void;
 }
 
-const HEADLINE = 'See Where Development Financing Moves the World';
+const ROTATING_PHRASES = [
+  'Tracked in Real Time',
+  'Across 205 Economies',
+  'From Approval to Disbursement',
+  'Fully Transparent',
+];
 
 export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onExplore }) => {
-  const { text: typed } = useTypewriter(HEADLINE, 32, 300);
+  const typed = useTypewriterLoop(ROTATING_PHRASES);
 
   return (
     <section className="relative flex min-h-[90vh] flex-col justify-center overflow-hidden px-4 py-16 md:min-h-[calc(100vh-56px)]">
@@ -23,20 +28,22 @@ export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onExplore }) => {
       </div>
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-6">
-        {/* Left: typing headline + copy */}
+        {/* Left: headline with a looping typed phrase */}
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
           <Badge variant="pipeline" className="mb-4">
             WORLD BANK OPEN DATA OBSERVATORY
           </Badge>
 
-          <h1 className="min-h-[8.5rem] text-4xl font-semibold leading-tight text-foreground sm:text-5xl sm:min-h-[10rem]">
+          <h1 className="text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+            Global Development Financing,
+          </h1>
+          <h1 className="mt-1 min-h-[1.2em] text-4xl font-semibold leading-tight text-emerald-500 sm:text-5xl">
             {typed}
             <span className="ml-0.5 inline-block w-[3px] animate-pulse bg-emerald-500 align-middle" style={{ height: '0.85em' }} />
           </h1>
 
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
-            Loanly tracks real World Bank indicator data across 205 economies and models the full IBRD/IDA project
-            financing lifecycle — from board approval through disbursement — in one transparent, real-time platform.
+          <p className="mt-5 max-w-md text-base text-muted-foreground">
+            Real indicator data. Real project lifecycles. One platform.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start">

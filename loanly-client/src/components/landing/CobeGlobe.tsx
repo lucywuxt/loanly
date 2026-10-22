@@ -5,14 +5,15 @@ import { useTheme } from '../../context/ThemeContext';
 // Approximate capital/major-city coordinates for the countries this
 // app's demo portfolio actually operates in, so the decorative globe
 // still nods at real data rather than being purely arbitrary.
-const MARKERS: { location: [number, number]; size: number }[] = [
-  { location: [-1.286, 36.817], size: 0.06 }, // Kenya
-  { location: [28.6139, 77.209], size: 0.07 }, // India
-  { location: [-15.793, -47.882], size: 0.06 }, // Brazil
-  { location: [21.0278, 105.8342], size: 0.05 }, // Vietnam
-  { location: [9.0765, 7.3986], size: 0.05 }, // Nigeria
-  { location: [4.711, -74.0721], size: 0.05 }, // Colombia
+const MARKED_COUNTRIES: { location: [number, number]; size: number; iso: string; name: string }[] = [
+  { location: [-1.286, 36.817], size: 0.06, iso: 'KEN', name: 'Kenya' },
+  { location: [28.6139, 77.209], size: 0.07, iso: 'IND', name: 'India' },
+  { location: [-15.793, -47.882], size: 0.06, iso: 'BRA', name: 'Brazil' },
+  { location: [21.0278, 105.8342], size: 0.05, iso: 'VNM', name: 'Vietnam' },
+  { location: [9.0765, 7.3986], size: 0.05, iso: 'NGA', name: 'Nigeria' },
+  { location: [4.711, -74.0721], size: 0.05, iso: 'COL', name: 'Colombia' },
 ];
+const MARKERS = MARKED_COUNTRIES.map(({ location, size }) => ({ location, size }));
 
 export const CobeGlobe: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -108,6 +109,15 @@ export const CobeGlobe: React.FC = () => {
           }
         }}
       />
+
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+        {MARKED_COUNTRIES.map((c) => (
+          <span key={c.iso} title={c.name} className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            {c.iso}
+          </span>
+        ))}
+      </div>
     </div>
   );
 };

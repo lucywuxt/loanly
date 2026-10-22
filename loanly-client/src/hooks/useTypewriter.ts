@@ -1,29 +1,31 @@
 import { useEffect, useState } from 'react';
 
-/** Types out `text` one character at a time, starting after `startDelayMs`. */
-export function useTypewriter(text: string, speedMs = 35, startDelayMs = 200): { text: string; done: boolean } {
-  const [length, setLength] = useState(0);
+/** Types each word in `words`, pauses, deletes it, then moves to the next — looping forever. */
+export function useTypewriterLoop(words: string[], typeMs = 55, deleteMs = 28, pauseMs = 1600): string {
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    setLength(0);
-    let i = 0;
-    let interval: number | undefined;
+    const current = words[index] ?? '';
 
-    const start = window.setTimeout(() => {
-      interval = window.setInterval(() => {
-        i += 1;
-        setLength(i);
-        if (i >= text.length && interval) {
-          window.clearInterval(interval);
-        }
-      }, speedMs);
-    }, startDelayMs);
+    if (!deleting && subIndex === current.length) {
+      const t = window.setTimeout(() => setDeleting(true), pauseMs);
+      return () => window.clearTimeout(t);
+    }
 
-    return () => {
-      window.clearTimeout(start);
-      if (interval) window.clearInterval(interval);
-    };
-  }, [text, speedMs, startDelayMs]);
+    if (deleting && subIndex === 0) {
+      setDeleting(false);
+      setIndex((i) => (i + 1) % words.length);
+      return;
+    }
 
-  return { text: text.slice(0, length), done: length >= text.length };
+    const t = window.setTimeout(
+      () => setSubIndex((s) => s + (deleting ? -1 : 1)),
+      deleting ? deleteMs : typeMs
+    );
+    return () => window.clearTimeout(t);
+  }, [subIndex, deleting, index, words, typeMs, deleteMs, pauseMs]);
+
+  return (words[index] ?? '').slice(0, subIndex);
 }
