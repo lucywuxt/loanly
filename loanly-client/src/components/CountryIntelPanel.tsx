@@ -187,22 +187,23 @@ export const CountryIntelPanel: React.FC<CountryIntelPanelProps> = ({
               <TableHeader>
                 <TableRow>
                   <TableHead>Project</TableHead>
-                  <TableHead>Instrument</TableHead>
                   <TableHead className="text-right">Commitment</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {projects.map((p) => (
                   <TableRow key={p.projectCode}>
-                    <TableCell className="max-w-[140px] truncate" title={p.title}>
-                      {p.title}
+                    <TableCell className="max-w-[150px]">
+                      <div className="truncate" title={p.title}>
+                        {p.title}
+                      </div>
+                      <div className="font-mono text-[10px] text-zinc-500">{p.financingInstrument}</div>
                     </TableCell>
-                    <TableCell className="font-mono text-zinc-400">{p.financingInstrument}</TableCell>
                     <TableCell className="text-right font-mono">
                       ${(p.approvedAmount / 1e6).toFixed(0)}M
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-right">
                       <Badge variant={statusVariant[p.status] ?? 'default'}>{p.status}</Badge>
                     </TableCell>
                   </TableRow>

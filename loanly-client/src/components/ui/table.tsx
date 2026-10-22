@@ -19,11 +19,14 @@ export const TableRow: React.FC<React.HTMLAttributes<HTMLTableRowElement>> = ({ 
 
 export const TableHead: React.FC<React.ThHTMLAttributes<HTMLTableCellElement>> = ({ className, ...props }) => (
   <th
-    className={cn('py-2 pr-3 text-[11px] font-medium uppercase tracking-wide text-zinc-500', className)}
+    className={cn(
+      'py-2 pl-3 pr-3 text-[11px] font-medium uppercase tracking-wide text-zinc-500 first:pl-0',
+      className
+    )}
     {...props}
   />
 );
 
 export const TableCell: React.FC<React.TdHTMLAttributes<HTMLTableCellElement>> = ({ className, ...props }) => (
-  <td className={cn('py-2.5 pr-3 text-zinc-200', className)} {...props} />
+  <td className={cn('py-2.5 pl-3 pr-3 text-zinc-200 first:pl-0', className)} {...props} />
 );
