@@ -86,7 +86,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onEntryClick
                       onEntryClick?.(e);
                     }}
                     disabled={!onEntryClick}
-                    className="w-full rounded-lg px-2 py-1.5 text-left transition-colors enabled:hover:bg-muted/60 disabled:cursor-default"
+                    className="w-full rounded-lg px-2 py-1.5 text-left disabled:cursor-default"
                   >
                     <div className="flex flex-wrap items-center gap-1.5">
                       <Badge variant="muted">{e.action}</Badge>

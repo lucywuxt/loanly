@@ -330,7 +330,7 @@ export const AdminPortalPage: React.FC = () => {
       {actionError && <Alert variant="error">{actionError}</Alert>}
       {actionBanner && <Alert variant="success">{actionBanner}</Alert>}
 
-      {activeTab === 'dashboard' && analytics && <AdminPortfolioCharts analytics={analytics} />}
+      {activeTab === 'dashboard' && analytics && <AdminPortfolioCharts analytics={analytics} projects={projects} />}
 
       {activeTab === 'projects' && (
         selectedProjectId ? (
