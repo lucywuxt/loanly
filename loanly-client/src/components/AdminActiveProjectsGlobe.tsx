@@ -126,6 +126,26 @@ export const AdminActiveProjectsGlobe: React.FC<AdminActiveProjectsGlobeProps> =
             }
           }}
         />
+
+        {/* Floating labels that track each marker's live screen position via cobe's
+            CSS anchor vars (--cobe-<id> / --cobe-visible-<id>), fading in only while
+            that marker faces the camera. Non-interactive — purely informational. */}
+        {Array.from(countryCounts.entries()).map(([iso, count]) => (
+          <div
+            key={iso}
+            className="cobe-marker-label"
+            style={
+              {
+                positionAnchor: `--cobe-${iso}`,
+                opacity: `var(--cobe-visible-${iso}, 0)`,
+                cursor: 'default',
+                pointerEvents: 'none',
+              } as React.CSSProperties
+            }
+          >
+            {COUNTRY_COORDS[iso]?.name ?? iso} &middot; {count}
+          </div>
+        ))}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
