@@ -93,6 +93,7 @@ public class LoanlyDbContext : DbContext
         modelBuilder.Entity<SupportingDocument>(entity =>
         {
             entity.Property(d => d.DocumentType).HasConversion<string>().HasMaxLength(40);
+            entity.Property(d => d.FileContent).HasColumnType("varbinary(max)");
 
             entity.HasOne(d => d.WithdrawalApplication)
                 .WithMany(w => w.SupportingDocuments)

@@ -78,12 +78,15 @@ export interface SupportingDocument {
   fileSizeBytes: number;
   documentType: SupportingDocumentType;
   uploadedAt: string;
+  hasContent: boolean;
 }
 
 export interface SupportingDocumentInput {
   fileName: string;
   fileSizeBytes: number;
   documentType: SupportingDocumentType;
+  contentType: string;
+  fileContentBase64: string;
 }
 
 export interface AuditLogEntry {

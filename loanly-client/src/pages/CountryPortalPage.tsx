@@ -71,6 +71,14 @@ export const CountryPortalPage: React.FC = () => {
     loadData();
   }, []);
 
+  // Guards against a stale selection (e.g. a notification pointing at a project
+  // that's no longer in the loaded list) leaving the detail view stuck blank.
+  useEffect(() => {
+    if (selectedProjectId != null && projects.length > 0 && !projects.some((p) => p.id === selectedProjectId)) {
+      setSelectedProjectId(null);
+    }
+  }, [projects, selectedProjectId]);
+
   const toggleWaSort = (key: WaSortKey) =>
     setWaSort((prev) => (prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'desc' }));
 
@@ -129,6 +137,17 @@ export const CountryPortalPage: React.FC = () => {
       portalLabel="Borrower Portal"
       active={activeTab}
       onChange={(id) => setActiveTab(id as typeof activeTab)}
+      onNotificationClick={(entry) => {
+        const projectId =
+          entry.entityType === 'Project'
+            ? entry.entityId
+            : entry.entityType === 'WithdrawalApplication'
+            ? withdrawals.find((w) => w.id === entry.entityId)?.projectId
+            : undefined;
+        if (projectId == null) return;
+        setActiveTab('projects');
+        setSelectedProjectId(projectId);
+      }}
       tabs={[
         { id: 'projects', label: `My Projects (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
         { id: 'withdrawals', label: `Withdrawal Applications (${withdrawals.length})`, icon: <Clock className="h-3.5 w-3.5" /> },

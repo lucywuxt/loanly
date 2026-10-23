@@ -18,6 +18,7 @@ import type {
   Disbursement,
   PortfolioAnalytics,
   Project,
+  ProjectSector,
   ProjectStatus,
   ResultsIndicator,
   WithdrawalApplication,
@@ -33,7 +34,7 @@ import { ProjectTile } from '../components/ProjectTile';
 import { ProjectDetailView } from '../components/ProjectDetailView';
 import { Card, CardContent } from '../components/ui/card';
 import { Dialog, DialogHeader } from '../components/ui/dialog';
-import { Badge } from '../components/ui/badge';
+import { Badge, badgeVariants } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { StatCard } from '../components/ui/stat-card';
 import { ProgressBar } from '../components/ui/progress';
@@ -42,7 +43,9 @@ import { Input, Select } from '../components/ui/input';
 import { Pagination } from '../components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, SortableHead, TableHeader, TableRow } from '../components/ui/table';
 import { usePagination } from '../hooks/usePagination';
-import { WITHDRAWAL_STATUS_TONE } from '../lib/status';
+import { PROJECT_STATUS_TONE, WITHDRAWAL_STATUS_TONE } from '../lib/status';
+import { SECTOR_BADGE_CLASSES, SECTOR_ORDER } from '../lib/sector';
+import { cn } from '@/lib/utils';
 
 type WaSortKey = 'submittedAt' | 'amountRequested' | 'status';
 
@@ -53,6 +56,15 @@ const NEXT_STAGE_MAP: Partial<Record<ProjectStatus, ProjectStatus>> = {
   BoardApproval: 'Active',
   Active: 'Closed',
 };
+
+const PROJECT_STATUS_FILTER_OPTIONS: ProjectStatus[] = [
+  'Concept',
+  'Appraisal',
+  'Negotiation',
+  'BoardApproval',
+  'Active',
+  'Closed',
+];
 
 export const AdminPortalPage: React.FC = () => {
   const { user } = useAuth();
@@ -72,6 +84,8 @@ export const AdminPortalPage: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [sectorFilter, setSectorFilter] = useState<Set<ProjectSector>>(new Set());
+  const [projectStatusFilter, setProjectStatusFilter] = useState<Set<ProjectStatus>>(new Set());
 
   const [waSearch, setWaSearch] = useState('');
   const [waStatusFilter, setWaStatusFilter] = useState<WithdrawalStatus | 'All'>('All');
@@ -99,6 +113,14 @@ export const AdminPortalPage: React.FC = () => {
   useEffect(() => {
     loadPortfolio();
   }, []);
+
+  // Guards against a stale selection (e.g. a notification pointing at a since-deleted
+  // project) leaving the detail view stuck on a blank screen.
+  useEffect(() => {
+    if (selectedProjectId != null && projects.length > 0 && !projects.some((p) => p.id === selectedProjectId)) {
+      setSelectedProjectId(null);
+    }
+  }, [projects, selectedProjectId]);
 
   const handleAdvanceLifecycle = async (project: Project) => {
     const next = NEXT_STAGE_MAP[project.status];
@@ -180,6 +202,30 @@ export const AdminPortalPage: React.FC = () => {
   const toggleWaSort = (key: WaSortKey) =>
     setWaSort((prev) => (prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'desc' }));
 
+  const toggleSectorFilter = (sector: ProjectSector) =>
+    setSectorFilter((prev) => {
+      const next = new Set(prev);
+      next.has(sector) ? next.delete(sector) : next.add(sector);
+      return next;
+    });
+
+  const toggleProjectStatusFilter = (status: ProjectStatus) =>
+    setProjectStatusFilter((prev) => {
+      const next = new Set(prev);
+      next.has(status) ? next.delete(status) : next.add(status);
+      return next;
+    });
+
+  const filteredProjects = useMemo(
+    () =>
+      projects.filter(
+        (p) =>
+          (sectorFilter.size === 0 || sectorFilter.has(p.sector)) &&
+          (projectStatusFilter.size === 0 || projectStatusFilter.has(p.status))
+      ),
+    [projects, sectorFilter, projectStatusFilter]
+  );
+
   const filteredWithdrawals = useMemo(() => {
     const q = waSearch.trim().toLowerCase();
     let list = withdrawals.filter((w) => {
@@ -208,6 +254,17 @@ export const AdminPortalPage: React.FC = () => {
       portalLabel="Task Team Portal"
       active={activeTab}
       onChange={(id) => setActiveTab(id as typeof activeTab)}
+      onNotificationClick={(entry) => {
+        const projectId =
+          entry.entityType === 'Project'
+            ? entry.entityId
+            : entry.entityType === 'WithdrawalApplication'
+            ? withdrawals.find((w) => w.id === entry.entityId)?.projectId
+            : undefined;
+        if (projectId == null) return;
+        setActiveTab('projects');
+        setSelectedProjectId(projectId);
+      }}
       tabs={[
         { id: 'dashboard', label: 'Portfolio Analytics', icon: <PieChartIcon className="h-3.5 w-3.5" /> },
         { id: 'projects', label: `Project Lifecycle (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
@@ -300,10 +357,65 @@ export const AdminPortalPage: React.FC = () => {
             );
           })()
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((p) => (
-              <ProjectTile key={p.id} project={p} onClick={() => setSelectedProjectId(p.id)} />
-            ))}
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="mr-1 text-xs text-muted-foreground">Sector</span>
+              {SECTOR_ORDER.map((sector) => (
+                <button
+                  key={sector}
+                  type="button"
+                  onClick={() => toggleSectorFilter(sector as ProjectSector)}
+                  className={cn(
+                    badgeVariants({ variant: 'muted' }),
+                    'cursor-pointer transition-colors',
+                    sectorFilter.has(sector as ProjectSector)
+                      ? SECTOR_BADGE_CLASSES[sector]
+                      : 'opacity-60 hover:opacity-100'
+                  )}
+                >
+                  {sector}
+                </button>
+              ))}
+              <span className="ml-3 mr-1 text-xs text-muted-foreground">Status</span>
+              {PROJECT_STATUS_FILTER_OPTIONS.map((status) => (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => toggleProjectStatusFilter(status)}
+                  className={cn(
+                    badgeVariants({ variant: projectStatusFilter.has(status) ? PROJECT_STATUS_TONE[status] : 'muted' }),
+                    'cursor-pointer transition-colors',
+                    !projectStatusFilter.has(status) && 'opacity-60 hover:opacity-100'
+                  )}
+                >
+                  {status}
+                </button>
+              ))}
+              {(sectorFilter.size > 0 || projectStatusFilter.size > 0) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSectorFilter(new Set());
+                    setProjectStatusFilter(new Set());
+                  }}
+                  className="ml-2 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+
+            {filteredProjects.length === 0 ? (
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                No projects match the selected filters.
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredProjects.map((p) => (
+                  <ProjectTile key={p.id} project={p} onClick={() => setSelectedProjectId(p.id)} />
+                ))}
+              </div>
+            )}
           </div>
         )
       )}

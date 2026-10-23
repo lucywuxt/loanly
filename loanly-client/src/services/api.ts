@@ -65,6 +65,30 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function requestBlob(path: string): Promise<{ blob: Blob; fileName: string }> {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+
+  if (!res.ok) {
+    let errorMsg = `Request failed (${res.status})`;
+    try {
+      const errJson = await res.json();
+      if (errJson?.message) errorMsg = errJson.message;
+    } catch {
+      // ignore json parse error
+    }
+    throw new Error(errorMsg);
+  }
+
+  const disposition = res.headers.get('content-disposition') ?? '';
+  const match = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+  const fileName = match ? decodeURIComponent(match[1].replace(/['"]/g, '')) : 'document';
+
+  return { blob: await res.blob(), fileName };
+}
+
 export const api = {
   // Auth
   getDemoAccounts: () => request<DemoCredential[]>('/auth/demo-accounts'),
@@ -140,6 +164,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+  getDocumentContent: (documentId: number) => requestBlob(`/withdrawals/documents/${documentId}/content`),
   reviewWithdrawal: (
     withdrawalId: number,
     decisionStatus: WithdrawalStatus,
