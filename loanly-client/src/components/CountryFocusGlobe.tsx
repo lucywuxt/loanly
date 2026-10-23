@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import createGlobe from 'cobe';
 import { useTheme } from '../context/ThemeContext';
 import { COUNTRY_COORDS } from '../lib/countryGeo';
@@ -14,22 +14,41 @@ const RING_SIZE = 280;
 const STROKE = 10;
 const RADIUS = (RING_SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const DISBURSED_COLOR = '#10b981'; // emerald-500
+const REMAINING_COLOR = '#f59e0b'; // amber-500 — kept visually distinct from the emerald marker/arc
+
+interface Tip {
+  x: number;
+  y: number;
+  label: string;
+  amount: number;
+}
 
 export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3, committed, disbursed, remaining }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
   const phiRef = useRef(0);
   const rRef = useRef(0);
   const { theme } = useTheme();
+  const [tip, setTip] = useState<Tip | null>(null);
 
   const coords = COUNTRY_COORDS[isoAlpha3]?.location ?? [0, 0];
+  const countryName = COUNTRY_COORDS[isoAlpha3]?.name ?? isoAlpha3;
 
   const disbursedPct = committed > 0 ? Math.min(1, disbursed / committed) : 0;
   const remainingPct = committed > 0 ? Math.min(1 - disbursedPct, remaining / committed) : 0;
   const disbursedLen = CIRCUMFERENCE * disbursedPct;
   const remainingLen = CIRCUMFERENCE * remainingPct;
+
+  const showTip = (label: string, amount: number) => (e: React.MouseEvent) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setTip({ x: e.clientX - rect.left, y: e.clientY - rect.top, label, amount });
+  };
+  const hideTip = () => setTip(null);
 
   useEffect(() => {
     let width = 0;
@@ -58,7 +77,7 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
       baseColor: dark ? [0.25, 0.25, 0.28] : [0.85, 0.85, 0.88],
       markerColor: [0.06, 0.73, 0.51],
       glowColor: dark ? [0.15, 0.3, 0.25] : [0.6, 0.85, 0.75],
-      markers: [{ location: coords, size: 0.1 }],
+      markers: [{ location: coords, size: 0.1, id: isoAlpha3 }],
     });
 
     let frame: number;
@@ -87,10 +106,10 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
       globe.destroy();
       window.removeEventListener('resize', onResize);
     };
-  }, [theme, coords]);
+  }, [theme, coords, isoAlpha3]);
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[260px] lg:max-w-[360px]">
+    <div ref={containerRef} className="relative mx-auto aspect-square w-full max-w-[260px] lg:max-w-[360px]">
       <svg viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`} className="absolute inset-0 h-full w-full -rotate-90">
         <circle cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RADIUS} fill="none" stroke="var(--border)" strokeWidth={STROKE} />
         <circle
@@ -98,24 +117,32 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
           cy={RING_SIZE / 2}
           r={RADIUS}
           fill="none"
-          stroke="#10b981"
+          stroke={DISBURSED_COLOR}
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={`${disbursedLen} ${CIRCUMFERENCE - disbursedLen}`}
+          className="cursor-default"
+          onMouseEnter={showTip('Disbursed', disbursed)}
+          onMouseMove={showTip('Disbursed', disbursed)}
+          onMouseLeave={hideTip}
         />
         <circle
           cx={RING_SIZE / 2}
           cy={RING_SIZE / 2}
           r={RADIUS}
           fill="none"
-          stroke="#38bdf8"
+          stroke={REMAINING_COLOR}
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={`${remainingLen} ${CIRCUMFERENCE - remainingLen}`}
           strokeDashoffset={-disbursedLen}
+          className="cursor-default"
+          onMouseEnter={showTip('Remaining', remaining)}
+          onMouseMove={showTip('Remaining', remaining)}
+          onMouseLeave={hideTip}
         />
       </svg>
-      <div ref={wrapperRef} className="absolute inset-0 m-[14%]">
+      <div ref={wrapperRef} className="absolute inset-0 m-[6%]">
         <canvas
           ref={canvasRef}
           className="h-full w-full cursor-grab opacity-0 transition-opacity duration-500 [contain:layout_paint_size]"
@@ -146,7 +173,30 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
             }
           }}
         />
+        {/* Tracks the marker's live screen position via cobe's CSS anchor vars (--cobe-<id>); fades in only while the marker faces the camera. */}
+        <div
+          className="cobe-marker-label"
+          style={
+            {
+              positionAnchor: `--cobe-${isoAlpha3}`,
+              opacity: `var(--cobe-visible-${isoAlpha3}, 0)`,
+              cursor: 'default',
+            } as React.CSSProperties
+          }
+        >
+          {countryName}
+        </div>
       </div>
+
+      {tip && (
+        <div
+          className="globe-tooltip pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[130%] whitespace-nowrap"
+          style={{ left: tip.x, top: tip.y }}
+        >
+          <strong>{tip.label}</strong>
+          <div>${tip.amount.toLocaleString()}</div>
+        </div>
+      )}
     </div>
   );
 };

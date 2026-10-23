@@ -1,6 +1,23 @@
 import React from 'react';
-import { ArrowLeft, FilePlus2, History, Paperclip, Target } from 'lucide-react';
-import type { Disbursement, Project, ProjectStatus, WithdrawalApplication } from '../types/api';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Banknote,
+  CheckCircle2,
+  FilePlus2,
+  History,
+  Paperclip,
+  Target,
+  XCircle,
+} from 'lucide-react';
+import type {
+  Disbursement,
+  Project,
+  ProjectStatus,
+  ResultsIndicator,
+  WithdrawalApplication,
+  WithdrawalStatus,
+} from '../types/api';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -12,13 +29,23 @@ import { SECTOR_BADGE_CLASSES } from '../lib/sector';
 
 const LIFECYCLE_STAGES: ProjectStatus[] = ['Concept', 'Appraisal', 'Negotiation', 'BoardApproval', 'Active', 'Closed'];
 
+interface AdminActions {
+  nextStage?: ProjectStatus;
+  onAdvanceLifecycle: () => void;
+  onManageIndicator: (existing?: ResultsIndicator) => void;
+  onShowProjectHistory: () => void;
+  onReviewWithdrawal: (w: WithdrawalApplication, status: WithdrawalStatus) => void;
+  onRecordDisbursement: (w: WithdrawalApplication) => void;
+}
+
 interface ProjectDetailViewProps {
   project: Project;
   withdrawals: WithdrawalApplication[];
   disbursements: Disbursement[];
   onBack: () => void;
-  onSubmitWithdrawal: () => void;
+  onSubmitWithdrawal?: () => void;
   onShowHistory: (w: WithdrawalApplication) => void;
+  admin?: AdminActions;
 }
 
 export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
@@ -28,6 +55,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   onBack,
   onSubmitWithdrawal,
   onShowHistory,
+  admin,
 }) => {
   const pct = p.approvedAmount > 0 ? Math.round((p.totalDisbursed / p.approvedAmount) * 100) : 0;
 
@@ -52,11 +80,29 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             </div>
             <h1 className="text-2xl font-bold leading-tight text-foreground">{p.title}</h1>
           </div>
-          {p.status === 'Active' && (
-            <Button onClick={onSubmitWithdrawal}>
-              <FilePlus2 className="h-4 w-4" />
-              Submit Withdrawal
-            </Button>
+          {admin ? (
+            <div className="flex shrink-0 flex-wrap gap-2">
+              {admin.nextStage && (
+                <Button size="sm" onClick={admin.onAdvanceLifecycle}>
+                  Advance to {admin.nextStage}
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              )}
+              <Button size="sm" variant="outline" onClick={() => admin.onManageIndicator()}>
+                <Target className="h-3.5 w-3.5" />
+                Indicator
+              </Button>
+              <Button size="sm" variant="outline" onClick={admin.onShowProjectHistory}>
+                <History className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ) : (
+            p.status === 'Active' && (
+              <Button onClick={onSubmitWithdrawal}>
+                <FilePlus2 className="h-4 w-4" />
+                Submit Withdrawal
+              </Button>
+            )
           )}
         </div>
 
@@ -77,34 +123,52 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         </div>
       </Card>
 
-      {p.resultsIndicators.length > 0 && (
+      {(p.resultsIndicators.length > 0 || admin) && (
         <div>
-          <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-foreground">
-            <Target className="h-4 w-4" /> Results Indicators (PDO)
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {p.resultsIndicators.map((ind) => (
-              <Card key={ind.id} className="p-4">
-                <h4 className="text-sm font-semibold text-foreground">{ind.indicatorName}</h4>
-                <div className="my-3 grid grid-cols-3 gap-2 font-mono text-xs">
-                  <div>
-                    <div className="text-[10px] text-muted-foreground">Baseline</div>
-                    <div className="text-foreground">{ind.baselineValue.toLocaleString()} {ind.unit}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-muted-foreground">Current</div>
-                    <div className="text-sky-400">{ind.currentValue.toLocaleString()} {ind.unit}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-muted-foreground">Target</div>
-                    <div className="text-emerald-400">{ind.targetValue.toLocaleString()} {ind.unit}</div>
-                  </div>
-                </div>
-                <ProgressBar percent={ind.progressPercent} tone="sky" />
-                <div className="mt-1.5 text-[11px] text-muted-foreground">{ind.progressPercent}% toward PDO target</div>
-              </Card>
-            ))}
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+              <Target className="h-4 w-4" /> Results Indicators (PDO)
+            </h2>
+            {admin && (
+              <Button size="sm" variant="outline" onClick={() => admin.onManageIndicator()}>
+                <Target className="h-3.5 w-3.5" /> Add Indicator
+              </Button>
+            )}
           </div>
+          {p.resultsIndicators.length === 0 ? (
+            <div className="py-4 text-center text-sm text-muted-foreground">No Results Indicators defined yet.</div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {p.resultsIndicators.map((ind) => (
+                <Card key={ind.id} className="p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="text-sm font-semibold text-foreground">{ind.indicatorName}</h4>
+                    {admin && (
+                      <Button size="sm" variant="outline" onClick={() => admin.onManageIndicator(ind)}>
+                        Update
+                      </Button>
+                    )}
+                  </div>
+                  <div className="my-3 grid grid-cols-3 gap-2 font-mono text-xs">
+                    <div>
+                      <div className="text-[10px] text-muted-foreground">Baseline</div>
+                      <div className="text-foreground">{ind.baselineValue.toLocaleString()} {ind.unit}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-muted-foreground">Current</div>
+                      <div className="text-sky-400">{ind.currentValue.toLocaleString()} {ind.unit}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-muted-foreground">Target</div>
+                      <div className="text-emerald-400">{ind.targetValue.toLocaleString()} {ind.unit}</div>
+                    </div>
+                  </div>
+                  <ProgressBar percent={ind.progressPercent} tone="sky" />
+                  <div className="mt-1.5 text-[11px] text-muted-foreground">{ind.progressPercent}% toward PDO target</div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -123,6 +187,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                     <TableHead>Requested</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Documentation</TableHead>
+                    {admin && <TableHead>Actions</TableHead>}
                     <TableHead>Submitted</TableHead>
                     <TableHead>History</TableHead>
                   </TableRow>
@@ -141,7 +206,47 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                             <Paperclip className="h-3 w-3" /> {w.documents.length} file{w.documents.length > 1 ? 's' : ''}
                           </div>
                         )}
+                        {w.disbursement && (
+                          <div className="mt-0.5 text-[11px] text-emerald-400">
+                            Ref: {w.disbursement.transactionReference} (Bal: ${w.disbursement.designatedAccountBalanceAfter.toLocaleString()})
+                          </div>
+                        )}
                       </TableCell>
+                      {admin && (
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1.5">
+                            {w.status === 'Submitted' && (
+                              <Button size="sm" variant="outline" onClick={() => admin.onReviewWithdrawal(w, 'UnderReview')}>
+                                Under Review
+                              </Button>
+                            )}
+                            {(w.status === 'Submitted' || w.status === 'UnderReview') && (
+                              <>
+                                <Button size="sm" onClick={() => admin.onReviewWithdrawal(w, 'Approved')}>
+                                  <CheckCircle2 className="h-3 w-3" /> Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
+                                  onClick={() => admin.onReviewWithdrawal(w, 'Rejected')}
+                                >
+                                  <XCircle className="h-3 w-3" /> Reject
+                                </Button>
+                              </>
+                            )}
+                            {w.status === 'Approved' && !w.disbursement && (
+                              <Button
+                                size="sm"
+                                className="bg-sky-500 text-zinc-950 hover:bg-sky-400"
+                                onClick={() => admin.onRecordDisbursement(w)}
+                              >
+                                <Banknote className="h-3 w-3" /> Disburse
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
                       <TableCell className="text-muted-foreground">{new Date(w.submittedAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Button size="sm" variant="outline" onClick={() => onShowHistory(w)}>

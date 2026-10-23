@@ -7,7 +7,6 @@ import {
   XCircle,
   Banknote,
   Target,
-  ArrowRight,
   Clock,
   History,
   Paperclip,
@@ -30,6 +29,8 @@ import { AdminIndicatorModal } from '../components/AdminIndicatorModal';
 import { HistoryModal } from '../components/HistoryModal';
 import { AiChatWidget } from '../components/AiChatWidget';
 import { SidebarShell } from '../components/SidebarShell';
+import { ProjectTile } from '../components/ProjectTile';
+import { ProjectDetailView } from '../components/ProjectDetailView';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -40,8 +41,7 @@ import { Input, Select } from '../components/ui/input';
 import { Pagination } from '../components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, SortableHead, TableHeader, TableRow } from '../components/ui/table';
 import { usePagination } from '../hooks/usePagination';
-import { PROJECT_STATUS_TONE, WITHDRAWAL_STATUS_TONE } from '../lib/status';
-import { SECTOR_BADGE_CLASSES } from '../lib/sector';
+import { WITHDRAWAL_STATUS_TONE } from '../lib/status';
 
 type WaSortKey = 'submittedAt' | 'amountRequested' | 'status';
 
@@ -67,6 +67,7 @@ export const AdminPortalPage: React.FC = () => {
   const [actionBanner, setActionBanner] = useState<string | null>(null);
   const [historyTarget, setHistoryTarget] = useState<WithdrawalApplication | null>(null);
   const [projectHistoryTarget, setProjectHistoryTarget] = useState<Project | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
 
   const [waSearch, setWaSearch] = useState('');
   const [waStatusFilter, setWaStatusFilter] = useState<WithdrawalStatus | 'All'>('All');
@@ -183,104 +184,95 @@ export const AdminPortalPage: React.FC = () => {
       ]}
     >
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <Badge variant="pipeline" className="mb-2">
-            WORLD BANK INTERNAL OPERATIONS • {user?.subRoleOrRegion?.toUpperCase()}
-          </Badge>
-          <h1 className="text-xl font-semibold text-foreground">Task Team &amp; WFACS Disbursement Control Center</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Manage sovereign project lifecycles, enforce financing ceilings on Withdrawal Applications, record
-            Designated Account disbursements, and track PDO Results Indicators.
-          </p>
-        </div>
-        <Button onClick={() => setShowCreateProject(true)}>
-          <FolderPlus className="h-4 w-4" />
-          Create New Project
-        </Button>
-      </div>
+      {!(activeTab === 'projects' && selectedProjectId) && (
+        <>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <Badge variant="pipeline" className="mb-2">
+                WORLD BANK INTERNAL OPERATIONS • {user?.subRoleOrRegion?.toUpperCase()}
+              </Badge>
+              <h1 className="text-xl font-semibold text-foreground">Task Team &amp; WFACS Disbursement Control Center</h1>
+              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                Manage sovereign project lifecycles, enforce financing ceilings on Withdrawal Applications, record
+                Designated Account disbursements, and track PDO Results Indicators.
+              </p>
+            </div>
+            <Button onClick={() => setShowCreateProject(true)}>
+              <FolderPlus className="h-4 w-4" />
+              Create New Project
+            </Button>
+          </div>
+
+          {analytics && (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard
+                icon={<Landmark className="h-4 w-4" />}
+                tone="sky"
+                label="Total Portfolio Committed"
+                value={`$${analytics.totalCommitted.toLocaleString()}`}
+                sub={`${analytics.totalProjectsCount} Projects (${analytics.activeProjectsCount} Active)`}
+              />
+              <StatCard
+                icon={<CheckCircle2 className="h-4 w-4" />}
+                tone="emerald"
+                label="Total Disbursed"
+                value={`$${analytics.totalDisbursed.toLocaleString()}`}
+                sub={`${analytics.disbursementRatePercent}% Portfolio Disbursement Rate`}
+              />
+              <StatCard
+                icon={<Banknote className="h-4 w-4" />}
+                tone="amber"
+                label="Total Undisbursed Ceiling"
+                value={`$${analytics.totalUndisbursed.toLocaleString()}`}
+                sub="Available Across Approved Portfolio"
+              />
+              <StatCard
+                icon={<Clock className="h-4 w-4" />}
+                tone="violet"
+                label="Actionable Withdrawal Queue"
+                value={`${analytics.pendingWithdrawalsCount} WAs`}
+                sub={`$${analytics.pendingWithdrawalsVolume.toLocaleString()} Pending Volume`}
+              />
+            </div>
+          )}
+        </>
+      )}
 
       {actionError && <Alert variant="error">{actionError}</Alert>}
       {actionBanner && <Alert variant="success">{actionBanner}</Alert>}
 
-      {analytics && (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            icon={<Landmark className="h-4 w-4" />}
-            tone="sky"
-            label="Total Portfolio Committed"
-            value={`$${analytics.totalCommitted.toLocaleString()}`}
-            sub={`${analytics.totalProjectsCount} Projects (${analytics.activeProjectsCount} Active)`}
-          />
-          <StatCard
-            icon={<CheckCircle2 className="h-4 w-4" />}
-            tone="emerald"
-            label="Total Disbursed"
-            value={`$${analytics.totalDisbursed.toLocaleString()}`}
-            sub={`${analytics.disbursementRatePercent}% Portfolio Disbursement Rate`}
-          />
-          <StatCard
-            icon={<Banknote className="h-4 w-4" />}
-            tone="amber"
-            label="Total Undisbursed Ceiling"
-            value={`$${analytics.totalUndisbursed.toLocaleString()}`}
-            sub="Available Across Approved Portfolio"
-          />
-          <StatCard
-            icon={<Clock className="h-4 w-4" />}
-            tone="violet"
-            label="Actionable Withdrawal Queue"
-            value={`${analytics.pendingWithdrawalsCount} WAs`}
-            sub={`$${analytics.pendingWithdrawalsVolume.toLocaleString()} Pending Volume`}
-          />
-        </div>
-      )}
-
       {activeTab === 'dashboard' && analytics && <AdminPortfolioCharts analytics={analytics} />}
 
       {activeTab === 'projects' && (
-        <div className="space-y-3">
-          {projects.map((p) => {
-            const nextStage = NEXT_STAGE_MAP[p.status];
+        selectedProjectId ? (
+          (() => {
+            const selected = projects.find((p) => p.id === selectedProjectId);
+            if (!selected) return null;
             return (
-              <Card key={p.id} className="p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-                      <Badge variant="muted">{p.countryName} ({p.countryIso3})</Badge>
-                      <Badge variant="muted">{p.financingInstrument}</Badge>
-                      <Badge variant="muted" className={SECTOR_BADGE_CLASSES[p.sector]}>{p.sector}</Badge>
-                      <Badge variant={PROJECT_STATUS_TONE[p.status] ?? 'default'}>{p.status}</Badge>
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground">{p.title}</h3>
-                    <p className="mt-1 max-w-2xl text-xs text-muted-foreground">{p.projectDevelopmentObjective}</p>
-                  </div>
-                  <div className="flex shrink-0 gap-2">
-                    {nextStage && (
-                      <Button size="sm" onClick={() => handleAdvanceLifecycle(p)}>
-                        Advance to {nextStage}
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                    <Button size="sm" variant="outline" onClick={() => setIndicatorModal({ project: p })}>
-                      <Target className="h-3.5 w-3.5" />
-                      Indicator
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setProjectHistoryTarget(p)}>
-                      <History className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-                  <span>Ceiling: <strong className="text-foreground">${p.approvedAmount.toLocaleString()}</strong></span>
-                  <span>Disbursed: <strong className="text-emerald-400">${p.totalDisbursed.toLocaleString()}</strong></span>
-                  <span>Pending: <strong className="text-amber-400">${p.committedPendingDisbursement.toLocaleString()}</strong></span>
-                  <span>Remaining: <strong className="text-sky-400">${p.remainingUndisbursedAmount.toLocaleString()}</strong></span>
-                </div>
-              </Card>
+              <ProjectDetailView
+                project={selected}
+                withdrawals={withdrawals.filter((w) => w.projectId === selectedProjectId)}
+                disbursements={disbursements.filter((d) => d.projectId === selectedProjectId)}
+                onBack={() => setSelectedProjectId(null)}
+                onShowHistory={setHistoryTarget}
+                admin={{
+                  nextStage: NEXT_STAGE_MAP[selected.status],
+                  onAdvanceLifecycle: () => handleAdvanceLifecycle(selected),
+                  onManageIndicator: (existing) => setIndicatorModal({ project: selected, existing }),
+                  onShowProjectHistory: () => setProjectHistoryTarget(selected),
+                  onReviewWithdrawal: handleReviewWA,
+                  onRecordDisbursement: handleRecordDisbursement,
+                }}
+              />
             );
-          })}
-        </div>
+          })()
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map((p) => (
+              <ProjectTile key={p.id} project={p} onClick={() => setSelectedProjectId(p.id)} />
+            ))}
+          </div>
+        )
       )}
 
       {activeTab === 'withdrawals' && (

@@ -223,17 +223,13 @@ export const CountryPortalPage: React.FC = () => {
             </div>
 
             {user?.isoAlpha3 && (
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex justify-center">
                 <CountryFocusGlobe
                   isoAlpha3={user.isoAlpha3}
                   committed={totalApproved}
                   disbursed={totalDisbursed}
                   remaining={totalRemaining}
                 />
-                <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
-                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Disbursed</span>
-                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-sky-500" /> Remaining</span>
-                </div>
               </div>
             )}
           </Card>
