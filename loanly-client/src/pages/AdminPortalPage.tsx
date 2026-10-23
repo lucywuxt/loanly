@@ -252,7 +252,7 @@ export const AdminPortalPage: React.FC = () => {
                       <Badge variant="muted" className={SECTOR_BADGE_CLASSES[p.sector]}>{p.sector}</Badge>
                       <Badge variant={PROJECT_STATUS_TONE[p.status] ?? 'default'}>{p.status}</Badge>
                     </div>
-                    <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
+                    <h3 className="text-lg font-bold text-foreground">{p.title}</h3>
                     <p className="mt-1 max-w-2xl text-xs text-muted-foreground">{p.projectDevelopmentObjective}</p>
                   </div>
                   <div className="flex shrink-0 gap-2">
