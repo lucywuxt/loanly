@@ -20,8 +20,6 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({ selectedProjectId, s
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [modelBadge, setModelBadge] = useState('gemini-3.6-flash');
-  const [contextSummary, setContextSummary] = useState('Live Client Connection Context');
   const [suggestions, setSuggestions] = useState<string[]>([
     "What's the status of my latest withdrawal application?",
     'Which expenditure category does consultant travel fall under?',
@@ -31,7 +29,7 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({ selectedProjectId, s
     {
       role: 'assistant',
       content:
-        'Welcome to the **Loanly Client Connection Operations Assistant** (powered by **Gemini 3.6 Flash**). Ask me about your active project ceilings, Withdrawal Application statuses, expenditure categories (Works, Goods, ConsultingServices, Training, OperatingCosts), or IBRD/IDA instruments.',
+        'Welcome to the **Loanly Client Connection Operations Assistant**. Ask me about your active project ceilings, Withdrawal Application statuses, expenditure categories (Works, Goods, ConsultingServices, Training, OperatingCosts), or IBRD/IDA instruments.',
     },
   ]);
 
@@ -54,8 +52,6 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({ selectedProjectId, s
         history: nextMessages.slice(-6),
       });
       setMessages([...nextMessages, { role: 'assistant', content: response.reply }]);
-      setModelBadge(response.modelUsed);
-      setContextSummary(response.contextSummary);
       if (response.suggestedFollowUps?.length) {
         setSuggestions(response.suggestedFollowUps);
       }
@@ -80,7 +76,7 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({ selectedProjectId, s
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          title="Open Gemini 3.6 Flash Operations Assistant"
+          title="Open Client Connection Operations Assistant"
           className="liquid-glass liquid-glass-lift flex items-center gap-2 rounded-full border-emerald-500/30 px-4 py-2.5 text-sm font-medium text-foreground shadow-lg hover:border-emerald-500/60"
         >
           <Sparkles className="h-4 w-4 text-emerald-400" />
@@ -96,9 +92,7 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({ selectedProjectId, s
               </div>
               <div>
                 <div className="text-xs font-semibold text-foreground">Client Connection Assistant</div>
-                <div className="text-[10px] text-muted-foreground">
-                  {modelBadge} • {contextSummary}
-                </div>
+                <div className="text-[10px] text-muted-foreground">Live Client Connection Context</div>
               </div>
             </div>
             <div className="flex items-center gap-1">

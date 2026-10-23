@@ -32,6 +32,7 @@ import { SidebarShell } from '../components/SidebarShell';
 import { ProjectTile } from '../components/ProjectTile';
 import { ProjectDetailView } from '../components/ProjectDetailView';
 import { Card, CardContent } from '../components/ui/card';
+import { Dialog, DialogHeader } from '../components/ui/dialog';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { StatCard } from '../components/ui/stat-card';
@@ -68,6 +69,9 @@ export const AdminPortalPage: React.FC = () => {
   const [historyTarget, setHistoryTarget] = useState<WithdrawalApplication | null>(null);
   const [projectHistoryTarget, setProjectHistoryTarget] = useState<Project | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [waSearch, setWaSearch] = useState('');
   const [waStatusFilter, setWaStatusFilter] = useState<WithdrawalStatus | 'All'>('All');
@@ -142,6 +146,34 @@ export const AdminPortalPage: React.FC = () => {
       await loadPortfolio();
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Disbursement failed');
+    }
+  };
+
+  const openDeleteDialog = (project: Project) => {
+    setDeleteError(null);
+    setDeleteTarget(project);
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteTarget(null);
+    setDeleteError(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await api.deleteProject(deleteTarget.id);
+      setActionBanner(`Deleted project ${deleteTarget.projectCode} "${deleteTarget.title}".`);
+      setDeleteTarget(null);
+      setDeleteError(null);
+      setSelectedProjectId(null);
+      await loadPortfolio();
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Failed to delete project');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -262,6 +294,7 @@ export const AdminPortalPage: React.FC = () => {
                   onShowProjectHistory: () => setProjectHistoryTarget(selected),
                   onReviewWithdrawal: handleReviewWA,
                   onRecordDisbursement: handleRecordDisbursement,
+                  onDeleteProject: () => openDeleteDialog(selected),
                 }}
               />
             );
@@ -477,6 +510,31 @@ export const AdminPortalPage: React.FC = () => {
           title={`History — ${projectHistoryTarget.title}`}
           onClose={() => setProjectHistoryTarget(null)}
         />
+      )}
+
+      {deleteTarget && (
+        <Dialog onClose={() => (deleting ? undefined : closeDeleteDialog())}>
+          <DialogHeader title="Delete Project" onClose={closeDeleteDialog} />
+          <div className="p-4">
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to permanently delete <strong className="text-foreground">{deleteTarget.projectCode} &ldquo;{deleteTarget.title}&rdquo;</strong>?
+              This also removes its Withdrawal Applications and Results Indicators, and cannot be undone.
+            </p>
+            {deleteError && <Alert variant="error" className="mt-3">{deleteError}</Alert>}
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="outline" onClick={closeDeleteDialog} disabled={deleting}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-rose-500 text-zinc-950 hover:bg-rose-400"
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting…' : 'Delete Project'}
+              </Button>
+            </div>
+          </div>
+        </Dialog>
       )}
 
       <AiChatWidget />

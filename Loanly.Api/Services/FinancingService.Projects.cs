@@ -159,4 +159,25 @@ public partial class FinancingService
 
         return (await GetProjectByIdAsync(project.Id))!;
     }
+
+    public async Task DeleteProjectAsync(int adminId, int projectId)
+    {
+        var project = await _db.Projects
+            .Include(p => p.WithdrawalApplications).ThenInclude(w => w.Disbursement)
+            .FirstOrDefaultAsync(p => p.Id == projectId)
+            ?? throw new ServiceValidationException($"Project with ID {projectId} was not found.");
+
+        if (project.WithdrawalApplications.Any(w => w.Disbursement != null))
+            throw new ServiceValidationException(
+                "Cannot delete a project that already has recorded disbursements. Close it instead to preserve the financial record.");
+
+        var admin = await _db.Admins.FindAsync(adminId);
+        await LogAuditAsync(
+            "Project", project.Id, "Deleted",
+            $"Project {project.ProjectCode} \"{project.Title}\" deleted by {admin?.Name ?? "Admin"}.",
+            admin?.Name ?? "Admin", admin?.Role.ToString() ?? "Admin", project.CountryId);
+
+        _db.Projects.Remove(project);
+        await _db.SaveChangesAsync();
+    }
 }

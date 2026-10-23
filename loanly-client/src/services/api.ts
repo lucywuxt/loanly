@@ -60,6 +60,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     throw new Error(errorMsg);
   }
 
+  if (res.status === 204) return undefined as T;
+
   return res.json() as Promise<T>;
 }
 
@@ -105,6 +107,8 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify({ newStatus }),
     }),
+  deleteProject: (projectId: number) =>
+    request<void>(`/projects/${projectId}`, { method: 'DELETE' }),
   upsertIndicator: (
     projectId: number,
     payload: {

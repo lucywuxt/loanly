@@ -5,8 +5,11 @@ import { cn } from '@/lib/utils';
 export const Stepper: React.FC<{ stages: string[]; currentIndex: number }> = ({ stages, currentIndex }) => (
   <div className="flex items-center">
     {stages.map((stage, i) => {
-      const done = i < currentIndex;
-      const current = i === currentIndex;
+      const isLastStage = i === stages.length - 1;
+      // The terminal stage (Closed) has nothing left to progress toward, so being
+      // "current" there means the lifecycle is complete — render it as done, not in-progress.
+      const done = i < currentIndex || (isLastStage && i === currentIndex);
+      const current = i === currentIndex && !done;
       return (
         <React.Fragment key={stage}>
           <div className="flex flex-col items-center gap-1">

@@ -8,6 +8,7 @@ import {
   History,
   Paperclip,
   Target,
+  Trash2,
   XCircle,
 } from 'lucide-react';
 import type {
@@ -36,6 +37,7 @@ interface AdminActions {
   onShowProjectHistory: () => void;
   onReviewWithdrawal: (w: WithdrawalApplication, status: WithdrawalStatus) => void;
   onRecordDisbursement: (w: WithdrawalApplication) => void;
+  onDeleteProject: () => void;
 }
 
 interface ProjectDetailViewProps {
@@ -94,6 +96,14 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               </Button>
               <Button size="sm" variant="outline" onClick={admin.onShowProjectHistory}>
                 <History className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
+                onClick={admin.onDeleteProject}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
           ) : (
