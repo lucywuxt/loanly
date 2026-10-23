@@ -18,6 +18,10 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3, committed, disbursed, remaining }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const pointerInteracting = useRef<number | null>(null);
+  const pointerInteractionMovement = useRef(0);
+  const phiRef = useRef(0);
+  const rRef = useRef(0);
   const { theme } = useTheme();
 
   const coords = COUNTRY_COORDS[isoAlpha3]?.location ?? [0, 0];
@@ -36,9 +40,10 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
     onResize();
 
     const dark = theme === 'dark';
-    // Orient the camera to face the country's marker and hold it there — no auto-rotation.
+    // Start facing the country's own marker, then auto-rotate from there (same feel as the landing globe).
     const focusPhi = (-coords[1] * Math.PI) / 180;
     const focusTheta = (coords[0] * Math.PI) / 180;
+    phiRef.current = focusPhi;
 
     const globe = createGlobe(canvasRef.current!, {
       devicePixelRatio: 2,
@@ -56,11 +61,17 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
       markers: [{ location: coords, size: 0.1 }],
     });
 
-    // cobe only paints inside update(); keep feeding it the same fixed
-    // orientation every frame so it renders without ever rotating.
     let frame: number;
     const render = () => {
-      globe.update({ phi: focusPhi, theta: focusTheta, width: width * 2, height: width * 2 });
+      if (!pointerInteracting.current) {
+        phiRef.current += 0.003;
+      }
+      globe.update({
+        phi: phiRef.current + rRef.current,
+        theta: focusTheta,
+        width: width * 2,
+        height: width * 2,
+      });
       frame = requestAnimationFrame(render);
     };
     frame = requestAnimationFrame(render);
@@ -79,7 +90,7 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
   }, [theme, coords]);
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[220px] lg:max-w-[280px]">
+    <div className="relative mx-auto aspect-square w-full max-w-[260px] lg:max-w-[360px]">
       <svg viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`} className="absolute inset-0 h-full w-full -rotate-90">
         <circle cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RADIUS} fill="none" stroke="var(--border)" strokeWidth={STROKE} />
         <circle
@@ -107,7 +118,33 @@ export const CountryFocusGlobe: React.FC<CountryFocusGlobeProps> = ({ isoAlpha3,
       <div ref={wrapperRef} className="absolute inset-0 m-[14%]">
         <canvas
           ref={canvasRef}
-          className="h-full w-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]"
+          className="h-full w-full cursor-grab opacity-0 transition-opacity duration-500 [contain:layout_paint_size]"
+          onPointerDown={(e) => {
+            pointerInteracting.current = e.clientX - pointerInteractionMovement.current;
+            if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
+          }}
+          onPointerUp={() => {
+            pointerInteracting.current = null;
+            if (canvasRef.current) canvasRef.current.style.cursor = 'grab';
+          }}
+          onPointerOut={() => {
+            pointerInteracting.current = null;
+            if (canvasRef.current) canvasRef.current.style.cursor = 'grab';
+          }}
+          onMouseMove={(e) => {
+            if (pointerInteracting.current !== null) {
+              const delta = e.clientX - pointerInteracting.current;
+              pointerInteractionMovement.current = delta;
+              rRef.current = delta / 200;
+            }
+          }}
+          onTouchMove={(e) => {
+            if (pointerInteracting.current !== null && e.touches[0]) {
+              const delta = e.touches[0].clientX - pointerInteracting.current;
+              pointerInteractionMovement.current = delta;
+              rRef.current = delta / 100;
+            }
+          }}
         />
       </div>
     </div>

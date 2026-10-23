@@ -197,7 +197,7 @@ export const CountryPortalPage: React.FC = () => {
         })()
       ) : activeTab === 'projects' ? (
         <div className="space-y-5">
-          <Card className="grid gap-6 p-5 lg:grid-cols-[1fr_auto] lg:items-center">
+          <Card className="grid gap-6 p-5 lg:grid-cols-2 lg:items-center">
             <div className="grid gap-3">
               <StatCard
                 icon={<Landmark className="h-4 w-4" />}
