@@ -29,7 +29,7 @@ public static partial class DbSeeder
         SeedProjectAuditTrail(db, admin, pKenyaGrid, pKenyaHealth, pKenyaDigital, pIndiaTransit, pBrazilAmazon, pVietnamDelta, pNigeriaEdu, pColombiaHealth);
         await db.SaveChangesAsync();
 
-        await SeedTransactionsAsync(db, admin, pKenyaGrid, pKenyaHealth, pIndiaTransit, pBrazilAmazon, pColombiaHealth);
+        await SeedTransactionsAsync(db, admin, kenya, india, brazil, colombia, pKenyaGrid, pKenyaHealth, pIndiaTransit, pBrazilAmazon, pColombiaHealth);
     }
 
     /// <summary>
