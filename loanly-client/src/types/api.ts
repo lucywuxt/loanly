@@ -163,38 +163,6 @@ export interface PortfolioAnalytics {
   byStatus: BreakdownItem[];
 }
 
-export interface IndicatorOption {
-  code: string;
-  name: string;
-  unit: string;
-  description: string;
-  colorScale: string;
-}
-
-export interface GlobalHighlightStat {
-  label: string;
-  formattedValue: string;
-  subtext: string;
-  trendDirection: string;
-}
-
-export interface CountryYearValue {
-  countryIso3: string;
-  countryName: string;
-  region: string;
-  year: number;
-  value: number | null;
-}
-
-export interface GlobalIndicatorDataset {
-  indicatorCode: string;
-  indicatorName: string;
-  unit: string;
-  minYear: number;
-  maxYear: number;
-  highlights: GlobalHighlightStat[];
-  dataPoints: CountryYearValue[];
-}
 
 export interface YearPoint {
   year: number;

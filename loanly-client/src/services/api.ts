@@ -8,8 +8,6 @@ import type {
   Disbursement,
   ExpenditureCategory,
   FinancingInstrument,
-  GlobalIndicatorDataset,
-  IndicatorOption,
   PortfolioAnalytics,
   Project,
   ProjectSector,
@@ -75,9 +73,6 @@ export const api = {
     }),
 
   // Public World Bank Open Data API Proxy
-  getIndicators: () => request<IndicatorOption[]>('/public/worldbank/indicators'),
-  getGlobalIndicator: (indicatorCode: string) =>
-    request<GlobalIndicatorDataset>(`/public/worldbank/global/${encodeURIComponent(indicatorCode)}`),
   getCountrySeries: (countryCode: string, indicatorCode: string) =>
     request<CountryIndicatorSeries>(
       `/public/worldbank/country/${encodeURIComponent(countryCode)}/indicator/${encodeURIComponent(indicatorCode)}`
