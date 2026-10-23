@@ -1,9 +1,47 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { MessageSquare, Send, Sparkles, X, Minimize2 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+
+const MARKDOWN_COMPONENTS = {
+  p: ({ children }: React.ComponentPropsWithoutRef<'p'>) => <p className="mb-1.5 last:mb-0">{children}</p>,
+  ul: ({ children }: React.ComponentPropsWithoutRef<'ul'>) => (
+    <ul className="mb-1.5 list-disc space-y-0.5 pl-4 last:mb-0">{children}</ul>
+  ),
+  ol: ({ children }: React.ComponentPropsWithoutRef<'ol'>) => (
+    <ol className="mb-1.5 list-decimal space-y-0.5 pl-4 last:mb-0">{children}</ol>
+  ),
+  li: ({ children }: React.ComponentPropsWithoutRef<'li'>) => <li>{children}</li>,
+  strong: ({ children }: React.ComponentPropsWithoutRef<'strong'>) => (
+    <strong className="font-semibold text-foreground">{children}</strong>
+  ),
+  a: ({ children, href }: React.ComponentPropsWithoutRef<'a'>) => (
+    <a href={href} target="_blank" rel="noreferrer" className="text-emerald-400 underline underline-offset-2">
+      {children}
+    </a>
+  ),
+  code: ({ children }: React.ComponentPropsWithoutRef<'code'>) => (
+    <code className="rounded bg-background/60 px-1 py-0.5 font-mono text-[11px]">{children}</code>
+  ),
+  pre: ({ children }: React.ComponentPropsWithoutRef<'pre'>) => (
+    <pre className="mb-1.5 overflow-x-auto rounded-md bg-background/60 p-2 font-mono text-[11px] last:mb-0">{children}</pre>
+  ),
+  h1: ({ children }: React.ComponentPropsWithoutRef<'h1'>) => <p className="mb-1 font-semibold text-foreground">{children}</p>,
+  h2: ({ children }: React.ComponentPropsWithoutRef<'h2'>) => <p className="mb-1 font-semibold text-foreground">{children}</p>,
+  h3: ({ children }: React.ComponentPropsWithoutRef<'h3'>) => <p className="mb-1 font-semibold text-foreground">{children}</p>,
+};
+
+const ChatMarkdown: React.FC<{ content: string }> = ({ content }) => (
+  <div className="prose-chat">
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+      {content}
+    </ReactMarkdown>
+  </div>
+);
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -127,7 +165,7 @@ export const AiChatWidget: React.FC<AiChatWidgetProps> = ({ selectedProjectId, s
                 <div className="mb-1 text-[10px] font-medium text-muted-foreground">
                   {m.role === 'assistant' ? 'WB Operations AI' : user.name}
                 </div>
-                <div className="whitespace-pre-wrap">{m.content}</div>
+                <ChatMarkdown content={m.content} />
               </div>
             ))}
             {loading && (
