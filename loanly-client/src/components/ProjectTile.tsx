@@ -29,8 +29,8 @@ export const ProjectTile: React.FC<ProjectTileProps> = ({ project: p, onClick })
         <h3 className="text-lg font-bold leading-snug text-foreground">{p.title}</h3>
         <div className="mt-1 text-xs text-muted-foreground">{p.countryName} &middot; {p.financingInstrument}</div>
 
-        <div className="mt-4 space-y-1.5">
-          <div className="flex items-baseline justify-between font-mono text-xs">
+        <div className="mt-4 space-y-2">
+          <div className="flex items-baseline justify-between font-mono text-sm">
             <span className="text-muted-foreground">${p.totalDisbursed.toLocaleString()} disbursed</span>
             <span className="text-foreground">${p.approvedAmount.toLocaleString()}</span>
           </div>

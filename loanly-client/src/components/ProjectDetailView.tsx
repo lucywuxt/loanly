@@ -112,14 +112,14 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
           <Stepper stages={LIFECYCLE_STAGES} currentIndex={LIFECYCLE_STAGES.indexOf(p.status)} />
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs text-muted-foreground">
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-x-6 gap-y-1.5 font-mono text-sm text-muted-foreground">
             <span>Ceiling: <strong className="text-foreground">${p.approvedAmount.toLocaleString()}</strong></span>
             <span>Disbursed: <strong className="text-emerald-400">${p.totalDisbursed.toLocaleString()} ({pct}%)</strong></span>
             <span>Pending: <strong className="text-amber-400">${p.committedPendingDisbursement.toLocaleString()}</strong></span>
             <span>Remaining: <strong className="text-sky-400">${p.remainingUndisbursedAmount.toLocaleString()}</strong></span>
           </div>
-          <ProgressBar percent={pct} />
+          <ProgressBar percent={pct} className="h-3" />
         </div>
       </Card>
 
