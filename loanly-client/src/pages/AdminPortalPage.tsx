@@ -267,8 +267,8 @@ export const AdminPortalPage: React.FC = () => {
       }}
       tabs={[
         { id: 'dashboard', label: 'Portfolio Analytics', icon: <PieChartIcon className="h-3.5 w-3.5" /> },
-        { id: 'projects', label: `Project Lifecycle (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
-        { id: 'withdrawals', label: `Withdrawal Review & Disbursements (${withdrawals.length})`, icon: <Banknote className="h-3.5 w-3.5" /> },
+        { id: 'projects', label: 'Project Lifecycle', icon: <Landmark className="h-3.5 w-3.5" /> },
+        { id: 'withdrawals', label: 'Withdrawal Review & Disbursements', icon: <Banknote className="h-3.5 w-3.5" /> },
         { id: 'indicators', label: 'Results Indicators (PDO)', icon: <Target className="h-3.5 w-3.5" /> },
       ]}
     >

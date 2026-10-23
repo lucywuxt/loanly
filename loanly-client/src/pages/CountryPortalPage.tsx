@@ -149,9 +149,9 @@ export const CountryPortalPage: React.FC = () => {
         setSelectedProjectId(projectId);
       }}
       tabs={[
-        { id: 'projects', label: `My Projects (${projects.length})`, icon: <Landmark className="h-3.5 w-3.5" /> },
-        { id: 'withdrawals', label: `Withdrawal Applications (${withdrawals.length})`, icon: <Clock className="h-3.5 w-3.5" /> },
-        { id: 'disbursements', label: `Disbursement Ledger (${disbursements.length})`, icon: <Receipt className="h-3.5 w-3.5" /> },
+        { id: 'projects', label: 'My Projects', icon: <Landmark className="h-3.5 w-3.5" /> },
+        { id: 'withdrawals', label: 'Withdrawal Applications', icon: <Clock className="h-3.5 w-3.5" /> },
+        { id: 'disbursements', label: 'Disbursement Ledger', icon: <Receipt className="h-3.5 w-3.5" /> },
       ]}
     >
     <div className="space-y-6">
