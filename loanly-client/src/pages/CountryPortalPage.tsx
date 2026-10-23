@@ -148,29 +148,31 @@ export const CountryPortalPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <StatCard
-              icon={<Landmark className="h-4 w-4" />}
-              tone="sky"
-              label="Approved Financing Ceiling"
-              value={`$${totalApproved.toLocaleString()}`}
-              sub={`${projects.length} Total Projects (${activeProjects.length} Active)`}
-            />
-            <StatCard
-              icon={<CheckCircle2 className="h-4 w-4" />}
-              tone="emerald"
-              label="Cumulative Disbursed"
-              value={`$${totalDisbursed.toLocaleString()}`}
-              sub={`${disbursements.length} Recorded Tranches`}
-            />
-            <StatCard
-              icon={<TrendingUp className="h-4 w-4" />}
-              tone="amber"
-              label="Remaining Undisbursed Ceiling"
-              value={`$${totalRemaining.toLocaleString()}`}
-              sub="Available for Drawdown on Active Projects"
-            />
-          </div>
+          {activeTab !== 'projects' && (
+            <div className="grid gap-3 sm:grid-cols-3">
+              <StatCard
+                icon={<Landmark className="h-4 w-4" />}
+                tone="sky"
+                label="Approved Financing Ceiling"
+                value={`$${totalApproved.toLocaleString()}`}
+                sub={`${projects.length} Total Projects (${activeProjects.length} Active)`}
+              />
+              <StatCard
+                icon={<CheckCircle2 className="h-4 w-4" />}
+                tone="emerald"
+                label="Cumulative Disbursed"
+                value={`$${totalDisbursed.toLocaleString()}`}
+                sub={`${disbursements.length} Recorded Tranches`}
+              />
+              <StatCard
+                icon={<TrendingUp className="h-4 w-4" />}
+                tone="amber"
+                label="Remaining Undisbursed Ceiling"
+                value={`$${totalRemaining.toLocaleString()}`}
+                sub="Available for Drawdown on Active Projects"
+              />
+            </div>
+          )}
         </>
       )}
 
@@ -195,15 +197,47 @@ export const CountryPortalPage: React.FC = () => {
         })()
       ) : activeTab === 'projects' ? (
         <div className="space-y-5">
-          {user?.isoAlpha3 && (
-            <CountryFocusGlobe
-              isoAlpha3={user.isoAlpha3}
-              countryName={user.name}
-              committed={totalApproved}
-              disbursed={totalDisbursed}
-              projectCount={projects.length}
-            />
-          )}
+          <Card className="grid gap-6 p-5 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="grid gap-3">
+              <StatCard
+                icon={<Landmark className="h-4 w-4" />}
+                tone="sky"
+                label="Approved Financing Ceiling"
+                value={`$${totalApproved.toLocaleString()}`}
+                sub={`${projects.length} Total Projects (${activeProjects.length} Active)`}
+              />
+              <StatCard
+                icon={<CheckCircle2 className="h-4 w-4" />}
+                tone="emerald"
+                label="Cumulative Disbursed"
+                value={`$${totalDisbursed.toLocaleString()}`}
+                sub={`${disbursements.length} Recorded Tranches`}
+              />
+              <StatCard
+                icon={<TrendingUp className="h-4 w-4" />}
+                tone="amber"
+                label="Remaining Undisbursed Ceiling"
+                value={`$${totalRemaining.toLocaleString()}`}
+                sub="Available for Drawdown on Active Projects"
+              />
+            </div>
+
+            {user?.isoAlpha3 && (
+              <div className="flex flex-col items-center gap-3">
+                <CountryFocusGlobe
+                  isoAlpha3={user.isoAlpha3}
+                  committed={totalApproved}
+                  disbursed={totalDisbursed}
+                  remaining={totalRemaining}
+                />
+                <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Disbursed</span>
+                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-sky-500" /> Remaining</span>
+                </div>
+              </div>
+            )}
+          </Card>
+
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {projects.map((p) => (
               <ProjectTile key={p.id} project={p} onClick={() => setSelectedProjectId(p.id)} />
