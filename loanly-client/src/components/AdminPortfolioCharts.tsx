@@ -26,9 +26,14 @@ const tooltipStyle = {
   color: 'var(--foreground)',
 };
 
-export const AdminPortfolioCharts: React.FC<{ analytics: PortfolioAnalytics; projects: Project[] }> = ({
+export const AdminPortfolioCharts: React.FC<{
+  analytics: PortfolioAnalytics;
+  projects: Project[];
+  onSelectCountry?: (iso3: string) => void;
+}> = ({
   analytics,
   projects,
+  onSelectCountry,
 }) => {
   const sectorData = analytics.bySector.map((s) => ({
     name: s.label,
@@ -121,7 +126,7 @@ export const AdminPortfolioCharts: React.FC<{ analytics: PortfolioAnalytics; pro
           <CardTitle>Global Footprint — Active Projects</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <AdminActiveProjectsGlobe projects={projects} />
+          <AdminActiveProjectsGlobe projects={projects} onSelectCountry={onSelectCountry} />
         </CardContent>
       </Card>
     </div>

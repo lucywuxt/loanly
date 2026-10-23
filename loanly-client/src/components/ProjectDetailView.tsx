@@ -76,6 +76,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-1.5">
+              <Badge variant="muted">{p.countryName} ({p.countryIso3})</Badge>
               <Badge variant="muted">{p.financingInstrument}</Badge>
               <Badge variant="muted" className={SECTOR_BADGE_CLASSES[p.sector]}>{p.sector}</Badge>
               <Badge variant={PROJECT_STATUS_TONE[p.status] ?? 'default'}>{p.status}</Badge>

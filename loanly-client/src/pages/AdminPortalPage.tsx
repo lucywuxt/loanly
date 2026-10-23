@@ -86,6 +86,7 @@ export const AdminPortalPage: React.FC = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [sectorFilter, setSectorFilter] = useState<Set<ProjectSector>>(new Set());
   const [projectStatusFilter, setProjectStatusFilter] = useState<Set<ProjectStatus>>(new Set());
+  const [countryFilter, setCountryFilter] = useState<Set<string>>(new Set());
 
   const [waSearch, setWaSearch] = useState('');
   const [waStatusFilter, setWaStatusFilter] = useState<WithdrawalStatus | 'All'>('All');
@@ -216,14 +217,22 @@ export const AdminPortalPage: React.FC = () => {
       return next;
     });
 
+  const toggleCountryFilter = (iso3: string) =>
+    setCountryFilter((prev) => {
+      const next = new Set(prev);
+      next.has(iso3) ? next.delete(iso3) : next.add(iso3);
+      return next;
+    });
+
   const filteredProjects = useMemo(
     () =>
       projects.filter(
         (p) =>
           (sectorFilter.size === 0 || sectorFilter.has(p.sector)) &&
-          (projectStatusFilter.size === 0 || projectStatusFilter.has(p.status))
+          (projectStatusFilter.size === 0 || projectStatusFilter.has(p.status)) &&
+          (countryFilter.size === 0 || countryFilter.has(p.countryIso3))
       ),
-    [projects, sectorFilter, projectStatusFilter]
+    [projects, sectorFilter, projectStatusFilter, countryFilter]
   );
 
   const filteredWithdrawals = useMemo(() => {
@@ -330,7 +339,19 @@ export const AdminPortalPage: React.FC = () => {
       {actionError && <Alert variant="error">{actionError}</Alert>}
       {actionBanner && <Alert variant="success">{actionBanner}</Alert>}
 
-      {activeTab === 'dashboard' && analytics && <AdminPortfolioCharts analytics={analytics} projects={projects} />}
+      {activeTab === 'dashboard' && analytics && (
+        <AdminPortfolioCharts
+          analytics={analytics}
+          projects={projects}
+          onSelectCountry={(iso3) => {
+            setCountryFilter(new Set([iso3]));
+            setSectorFilter(new Set());
+            setProjectStatusFilter(new Set());
+            setSelectedProjectId(null);
+            setActiveTab('projects');
+          }}
+        />
+      )}
 
       {activeTab === 'projects' && (
         selectedProjectId ? (
@@ -391,12 +412,30 @@ export const AdminPortalPage: React.FC = () => {
                   {status}
                 </button>
               ))}
-              {(sectorFilter.size > 0 || projectStatusFilter.size > 0) && (
+              <span className="ml-3 mr-1 text-xs text-muted-foreground">Country</span>
+              {countries.map((c) => (
+                <button
+                  key={c.isoAlpha3}
+                  type="button"
+                  onClick={() => toggleCountryFilter(c.isoAlpha3)}
+                  className={cn(
+                    badgeVariants({ variant: 'muted' }),
+                    'cursor-pointer transition-colors',
+                    countryFilter.has(c.isoAlpha3)
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                      : 'opacity-60 hover:opacity-100'
+                  )}
+                >
+                  {c.isoAlpha3}
+                </button>
+              ))}
+              {(sectorFilter.size > 0 || projectStatusFilter.size > 0 || countryFilter.size > 0) && (
                 <button
                   type="button"
                   onClick={() => {
                     setSectorFilter(new Set());
                     setProjectStatusFilter(new Set());
+                    setCountryFilter(new Set());
                   }}
                   className="ml-2 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
                 >

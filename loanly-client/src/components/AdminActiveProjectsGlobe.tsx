@@ -6,9 +6,10 @@ import type { Project } from '../types/api';
 
 interface AdminActiveProjectsGlobeProps {
   projects: Project[];
+  onSelectCountry?: (iso3: string) => void;
 }
 
-export const AdminActiveProjectsGlobe: React.FC<AdminActiveProjectsGlobeProps> = ({ projects }) => {
+export const AdminActiveProjectsGlobe: React.FC<AdminActiveProjectsGlobeProps> = ({ projects, onSelectCountry }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const pointerInteracting = useRef<number | null>(null);
@@ -129,31 +130,41 @@ export const AdminActiveProjectsGlobe: React.FC<AdminActiveProjectsGlobeProps> =
 
         {/* Floating labels that track each marker's live screen position via cobe's
             CSS anchor vars (--cobe-<id> / --cobe-visible-<id>), fading in only while
-            that marker faces the camera. Non-interactive — purely informational. */}
+            that marker faces the camera. Clicking jumps to that country's projects. */}
         {Array.from(countryCounts.entries()).map(([iso, count]) => (
-          <div
+          <button
             key={iso}
+            type="button"
+            onClick={() => onSelectCountry?.(iso)}
+            disabled={!onSelectCountry}
             className="cobe-marker-label"
             style={
               {
                 positionAnchor: `--cobe-${iso}`,
                 opacity: `var(--cobe-visible-${iso}, 0)`,
-                cursor: 'default',
-                pointerEvents: 'none',
+                cursor: onSelectCountry ? 'pointer' : 'default',
+                pointerEvents: onSelectCountry ? 'auto' : 'none',
               } as React.CSSProperties
             }
           >
             {COUNTRY_COORDS[iso]?.name ?? iso} &middot; {count}
-          </div>
+          </button>
         ))}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
         {Array.from(countryCounts.entries()).map(([iso, count]) => (
-          <span key={iso} className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <button
+            key={iso}
+            type="button"
+            onClick={() => onSelectCountry?.(iso)}
+            disabled={!onSelectCountry}
+            title={COUNTRY_COORDS[iso]?.name ?? iso}
+            className="flex items-center gap-1 text-[11px] text-muted-foreground enabled:transition-colors enabled:hover:text-emerald-400"
+          >
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             {iso} &middot; {count}
-          </span>
+          </button>
         ))}
       </div>
       <p className="mt-1 text-[11px] text-muted-foreground">
