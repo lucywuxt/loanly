@@ -113,7 +113,7 @@ public partial class FinancingService
         var admin = await _db.Admins.FindAsync(adminId);
         await LogAuditAsync(
             "Project", project.Id, "Created",
-            $"{project.ProjectCode} \"{project.Title}\" created for {country.Name} ({project.Sector}, {project.ApprovedAmount:C0}).",
+            $"{project.ProjectCode} \"{project.Title}\" created for {country.Name} ({project.Sector}, ${project.ApprovedAmount:N0}).",
             admin?.Name ?? "Admin", admin?.Role.ToString() ?? "Admin", country.Id);
 
         return (await GetProjectByIdAsync(project.Id))!;

@@ -76,7 +76,7 @@ public partial class FinancingService
 
         await LogAuditAsync(
             "WithdrawalApplication", application.Id, "Created",
-            $"{application.ApplicationNumber} submitted for {project.ProjectCode} requesting {application.AmountRequested:C0} ({application.Category}).",
+            $"{application.ApplicationNumber} submitted for {project.ProjectCode} requesting ${application.AmountRequested:N0} ({application.Category}).",
             project.Country?.Name ?? "Country", "Country", project.CountryId);
 
         var reloaded = await _db.WithdrawalApplications

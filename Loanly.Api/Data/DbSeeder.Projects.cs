@@ -49,7 +49,7 @@ public static partial class DbSeeder
                 EntityType = "Project",
                 EntityId = p.Id,
                 Action = "Created",
-                Summary = $"{p.ProjectCode} \"{p.Title}\" created ({p.Sector}, {p.ApprovedAmount:C0}).",
+                Summary = $"{p.ProjectCode} \"{p.Title}\" created ({p.Sector}, ${p.ApprovedAmount:N0}).",
                 PerformedByName = admin.Name,
                 PerformedByRole = admin.Role.ToString(),
                 CountryId = p.CountryId,
